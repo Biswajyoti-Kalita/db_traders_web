@@ -1,0 +1,20 @@
+# README
+
+config.json -> create all controllers, models, env etc
+
+run for first time
+	cd scripts
+	sh initialize.sh
+	sh build.sh
+
+after modifying config.json run 
+	cd scripts
+	sh build.sh
+
+to run project for first time
+	cd release
+	node bin/www (once all tables are created close it)
+	node seed.js
+
+after modifying config and running build, run project by
+	node bin/www

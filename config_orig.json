@@ -1,0 +1,409 @@
+{
+  "project": "node_builder",
+  "roles": {
+    "member": 1,
+    "admin": 2
+  },
+  "models": [
+    {
+      "name": "user",
+      "fields": [
+        [
+          "username",
+          "string",
+          {
+            "allowNull": false,
+            "unique": true
+          },
+          "",
+          ""
+        ],
+        ["first_name", "string", {}, "required", ""],
+        ["last_name", "string", {}, "required", ""],
+        ["email", "string", {}, "required", ""],
+        [
+          "phone",
+          "string",
+          {
+            "limit": "20"
+          },
+          "required",
+          ""
+        ],
+        ["image_url", "string", {}, "required", ""],
+        ["password", "string", {}, "required", ""],
+        ["role_id", "integer", {}, "required", ""]
+      ],
+      "mapping": {
+        "role_id": {
+          "1": "Member",
+          "2": "Admin"
+        }
+      },
+      "join": [],
+      "seed": [
+        {
+          "id": 1,
+          "username": "admin",
+          "first_name": "Admin",
+          "last_name": "Admin",
+          "email": "admin@umbrellasolution.in",
+          "password": "$2a$10$zfZVlTvlwmZBnNsbbc3oKewmqsRUOjyotZ4ife2hoEsoV0iMcSZY2",
+          "role_id": 2
+        }
+      ]
+    },
+    {
+      "name": "booking",
+      "fields": [
+        ["booking_id", "string", {}, "required", ""],
+        ["booking_date", "dateonly", {}, "required", ""],
+        ["status", "integer", {}, "required", ""]
+      ],
+      "mapping": {
+        "status": {
+          "1": "Pending",
+          "2": "Booked",
+          "3": "Cancelled"
+        }
+      },
+      "join": [
+        {
+          "db": "user",
+          "as": "user",
+          "order": "1:1",
+          "field": "user_id"
+        }
+      ],
+      "seed": []
+    }
+  ],
+  "controllers": [
+    {
+      "name": "user",
+      "model": "user",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "edit_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "view_fields": [
+        "id",
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields_pre": [
+        "username : randomstring.generate(),password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "edit_fields_pre": [
+        "password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "booking",
+      "model": "booking",
+      "join": ["user"],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["booking_id", "booking_date", "status"],
+      "add_fields": ["user_id", "booking_date", "status"],
+      "edit_fields": ["user_id", "booking_date", "status"],
+      "view_fields": ["id", "booking_id", "booking_date", "status"],
+      "add_fields_pre": ["booking_id : randomstring.generate(),"],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "user",
+      "model": "user",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "edit_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "view_fields": [
+        "id",
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields_pre": [
+        "username : randomstring.generate(),password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "edit_fields_pre": [
+        "password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "portal": "member",
+      "copy": false
+    },
+    {
+      "name": "booking",
+      "model": "booking",
+      "join": ["user"],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["booking_id", "booking_date", "status"],
+      "add_fields": ["user_id", "booking_date", "status"],
+      "edit_fields": ["user_id", "booking_date", "status"],
+      "view_fields": ["id", "booking_id", "booking_date", "status"],
+      "add_fields_pre": ["booking_id : randomstring.generate(),"],
+      "edit_fields_pre": [],
+      "portal": "member",
+      "copy": false
+    }
+  ],
+  "portals": [
+    {
+      "name": "admin",
+      "view": true,
+      "login": true,
+      "forgot_password": true,
+      "role_id": 2,
+      "menus": [
+        {
+          "name": "Users",
+          "controller_name": "user",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "password",
+            "role_id"
+          ],
+          "table_header": [
+            "ID",
+            "First Name",
+            "Last Name",
+            "Phone",
+            "Email",
+            "role_id"
+          ],
+          "table_body": [
+            "id|integer",
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|string",
+            "role_id|mapping"
+          ],
+          "add_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ],
+          "edit_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ]
+        },
+        {
+          "name": "Bookings",
+          "controller_name": "booking",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-ticket-alt",
+          "filters": ["user_id", "booking_id", "booking_date", "status"],
+          "table_header": [
+            "ID",
+            "User",
+            "Booking ID",
+            "Booking Date",
+            "Status"
+          ],
+          "table_body": [
+            "id|integer",
+            "user.first_name|string",
+            "booking_id|string",
+            "booking_date|string",
+            "status|mapping"
+          ],
+          "add_fields": [
+            "user_id|integer",
+            "booking_date|dateonly",
+            "status|integer"
+          ],
+          "edit_fields": [
+            "user_id|integer",
+            "booking_date|dateonly",
+            "status|integer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "member",
+      "view": true,
+      "login": true,
+      "forgot_password": true,
+      "role_id": 1,
+      "menus": [
+        {
+          "name": "Users",
+          "controller_name": "user",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "password",
+            "role_id"
+          ],
+          "table_header": [
+            "ID",
+            "First Name",
+            "Last Name",
+            "Phone",
+            "Email",
+            "role_id"
+          ],
+          "table_body": [
+            "id|integer",
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|string",
+            "role_id|mapping"
+          ],
+          "add_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ],
+          "edit_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ]
+        },
+        {
+          "name": "Bookings",
+          "controller_name": "booking",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-ticket-alt",
+          "filters": ["user_id", "booking_id", "booking_date", "status"],
+          "table_header": [
+            "ID",
+            "User",
+            "Booking ID",
+            "Booking Date",
+            "Status"
+          ],
+          "table_body": [
+            "id|integer",
+            "user.first_name|string",
+            "booking_id|string",
+            "booking_date|string",
+            "status|mapping"
+          ],
+          "add_fields": [
+            "user_id|integer",
+            "booking_date|dateonly",
+            "status|integer"
+          ],
+          "edit_fields": [
+            "user_id|integer",
+            "booking_date|dateonly",
+            "status|integer"
+          ]
+        }
+      ]
+    }
+  ],
+  "copy": {},
+  "strings": {
+    "copyright": "2021, Copyright &copy; <a href='https://umbrellasolution.in' target='_blank'> Umbrella Solution </a>",
+    "company_name": "Umbrella Solution"
+  },
+  "env": {
+    "ENVIROMENT": "DEVELOPMENT",
+    "PORT": 9000,
+    "DB_HOST": "localhost",
+    "DB_USER": "root",
+    "DB_PASSWORD": "Biswa@123",
+    "DB_DATABASE": "node_builder",
+    "SECRET_KEY": "f90ZFPYAvKfFS1EZIs"
+  }
+}

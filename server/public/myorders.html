@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <link rel="icon" href="images/fevicon.png" type="image/gif" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+
+  <title>DB Traders</title>
+
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet"> <!-- range slider -->
+
+  <!-- font awesome style -->
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link href="css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="css/responsive.css" rel="stylesheet" />
+  <script type="text/javascript" src="js/cookie.min.js"></script>
+  <style type="text/css">
+    #myOrders img {
+      max-width: 100px;
+      max-height: 100px;
+      height: auto;
+      width: auto;
+    }
+     a {
+      text-decoration: none;
+      color: #222;
+    }
+    span.capitalize {
+      text-transform: capitalize;
+    }
+
+.hh-grayBox {
+  background-color: #FFF;
+  margin-bottom: 10px;
+  padding: 15px;
+  margin-top: 10px;
+}
+.pt45{padding-top:45px;}
+.order-tracking{
+  text-align: center;
+  width: 20%;
+  position: relative;
+  display: block;
+}
+.order-tracking .is-complete{
+  display: block;
+  position: relative;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  border: 0px solid #AFAFAF;
+  background-color: #f7be16;
+  margin: 0 auto;
+  transition: background 0.25s linear;
+  -webkit-transition: background 0.25s linear;
+  z-index: 2;
+}
+.order-tracking .is-complete:after {
+  display: block;
+  position: absolute;
+  content: '';
+  height: 14px;
+  width: 7px;
+  top: -2px;
+  bottom: 0;
+  left: 5px;
+  margin: auto 0;
+  border: 0px solid #AFAFAF;
+  border-width: 0px 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+}
+.order-tracking.completed .is-complete{
+  border-color: #27aa80;
+  border-width: 0px;
+  background-color: #27aa80;
+}
+.order-tracking.completed .is-complete:after {
+  border-color: #fff;
+  border-width: 0px 3px 3px 0;
+  width: 7px;
+  left: 11px;
+  opacity: 1;
+}
+.order-tracking p {
+  color: #A4A4A4;
+  font-size: small;
+  margin-top: 8px;
+  margin-bottom: 0;
+  line-height: 20px;
+}
+.order-tracking p span{font-size: 14px;}
+.order-tracking.completed p{
+  color: #000;
+  font-size: small;
+}
+.order-tracking::before {
+  content: '';
+  display: block;
+  height: 3px;
+  width: calc(100% - 40px);
+  background-color: #f7be16;
+  top: 13px;
+  position: absolute;
+  left: calc(-50% + 20px);
+  z-index: 0;
+}
+.order-tracking:first-child:before{display: none;}
+.order-tracking.completed:before{background-color: #27aa80;}
+
+  </style>
+
+</head>
+
+<body class="sub_page">
+
+  <div class="hero_area">
+    <!-- header section strats -->
+    <header class="header_section">
+      <div class="header_top">
+        <div class="container-fluid">
+          <div class="top_nav_container">
+            <div class="contact_nav">
+
+              <div class="flag">
+                <img src="images/india.jpg" alt="" width="25" / >
+              </div>
+              <a href="">
+                <i class="fa fa-phone ml-2" aria-hidden="true"></i>
+                <span>
+                   +91  80116 73333
+                </span>
+              </a>
+              <a href="">
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+                <span>                  
+                  INFO@DBTRADERS.IN
+                </span>
+              </a>
+            </div>
+            <form class="search_form">
+              <input type="search" list="nameList" class="form-control input-s" placeholder="Search here..." /> 
+              <button class="button-r" type="submit">
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </button>
+            </form>
+            <div class="user_option_box">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="header_bottom">
+        <div class="container-fluid">
+          <nav class="navbar navbar-expand-lg custom_nav-container ">
+            <a class="navbar-brand" href="index.html">
+              <span>
+                DB Traders.
+              </span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="fas fa-bars" style="color:#111; font-size:28px;"></i>
+            </button>
+
+            <div class="collapse navbar-collapse " id="navbarSupportedContent">
+              <ul class="navbar-nav mr-5 ">
+                <li class=" nav-item">
+                  <a href="index.html" >Home</a>
+                </li>
+
+                <li class=" nav-item dropdown">
+                  <a href="product.html#cat=Electronics" class="dropdown-toggle" data-toggle="dropdown">Electronics <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="product.html#cat=Computers_and_accessories">Computers & Accessories</a></li>
+                    <li class="divider"></li>
+                    <li><a href="product.html#cat=Mobiles_and_accessories">Mobiles & Accessories</a></li>
+                    <li class="divider"></li>
+                    <li><a href="product.html#cat=Appliances">Appliances</a></li>
+                  </ul>
+                </li>
+                <li class=" nav-item dropdown">
+                  <a href="product.html#cat=household" class="dropdown-toggle" data-toggle="dropdown">Household <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="product.html#cat=Kitchen_and_dining">Kitchen & Dining</a></li>
+                    <li class="divider"></li>
+                    <li><a href="product.html#cat=Utensil">Utensil</a></li>
+                    <li class="divider"></li>
+                    <li><a href="product.html#cat=cleaning_and_bath">Cleaning & Bath</a></li>
+                  </ul>
+                </li>
+                <li class=" nav-item dropdown">
+                  <a href="product.html#cat=kids" class="dropdown-toggle" data-toggle="dropdown">Kids <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="product.html#cat=toys">Toys</a></li>
+                    <li class="divider"></li>
+                    <li><a href="product.html#cat=baby_care">Baby Care</a></li>
+                  </ul>
+                </li>
+
+
+                <li class=" nav-item dropdown">
+                  <a href="product.html#cat=gifts" class="dropdown-toggle" data-toggle="dropdown">Gifts <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="product.html#cat=idols">Idols</a></li>
+                    <li class="divider"></li>
+                    <li><a href="product.html#cat=customizable_gifts">Customizable Gifts</a></li>
+                  </ul>
+                </li>
+
+                <li class=" nav-item dropdown">
+                  <a href="product.html#cat=womens" class="dropdown-toggle" data-toggle="dropdown">Women <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="product.html#cat=beauty_care">Beauty Care</a></li>
+                  </ul>
+                </li>
+                <li class=" nav-item dropdown">
+                  <a href="#" class="scrollDown" > Contact Us</a>
+                </li>
+
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- end header section -->
+  </div>
+
+  <!-- why us section -->
+
+  <section class="why_us_section layout_padding">
+    <div class="container">
+      <div class="heading_container heading_center">
+        <h2>
+          My Orders
+        </h2>
+      </div>
+      <div class="">
+        <div class="">
+          <button class="btn  btn-info" style="float: right;max-width: 150px;" >Go</button>
+          <select class="form-control" style="float: right;max-width: 150px;"  id="orderYear">
+          </select>
+        </div>
+        <br>
+        <br>
+        <div class="" id="myOrders">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- end why us section -->
+
+
+  
+
+  <!-- info section -->
+  <section class="info_section " >
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3582.496319769984!2d91.8002915650282!3d26.11535563347747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375a5f2e16601617%3A0x76779a60b4fdb361!2sDb%20Traders!5e0!3m2!1sen!2sin!4v1592592084281!5m2!1sen!2sin"  frameborder="0" style="border:0;width: 100%;" allowfullscreen="" aria-hidden="false" tabindex="0" height="300" ></iframe>              
+        </div>
+        <div class="col-md-3">
+          <div class="info_contact" id="contactUs">
+            <h5>
+              <a href="" class="navbar-brand">
+                <span>
+                  DB Traders
+                </span>
+              </a>
+            </h5>
+            <p>
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+                A.G Office Road<br>
+                Beltola, Maidamgaon<br>
+                Guwahati-781029, Assam
+            </p>
+            <p>
+              <i class="fa fa-phone" aria-hidden="true"></i>
+               +91 80116 73333 
+            </p>
+            <p>
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+              info@dbtraders.in
+            </p>
+          </div>
+        </div>
+    <!--         <div class="col-md-3">
+          <div class="info_info">
+            <h5>
+              Information
+            </h5>
+            <p>
+
+            </p>
+          </div>
+        </div> -->
+        <div class="col-md-3">
+          <div class="info_links">
+            <h5>
+              Useful Link
+            </h5>
+            <ul>
+              <li>
+                <a href="index.html">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="product.html">
+                  Products
+                </a>
+              </li>
+              <li>
+                <a href="terms.html">
+                  Terms & Condition
+                </a>
+              </li>
+              <li>
+                <a href="privacy.html">
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="refund.html">
+                  Cancellation/Refund Policy 
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- end info_section -->
+
+
+  <!-- footer section -->
+  <footer class="footer_section">
+    <div class="container">
+      <p>
+        &copy; <span id="displayYear"></span> 
+        All Rights Reserved By
+        <a href="https://dbtraders.in/">DB Traders</a>
+      </p>
+    </div>
+  </footer>
+  <!-- footer section -->
+  <!-- jQery -->
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="js/preloader.js"></script>
+  <!-- bootstrap js -->
+  <script src="js/bootstrap.js"></script>
+  <!-- custom js -->
+  <script src="js/custom.js"></script>
+  <script type="text/javascript" src="js/script6.js"></script>
+
+</body>
+
+</html>

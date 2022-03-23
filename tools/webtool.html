@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Web Tool</title>
+    <style type="text/css">
+    .container {
+        width: auto;
+        max-width: 90%;
+        margin-left: 5%;
+    }
+
+    .input-c,
+    .textarea-c {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #222;
+    }
+
+    .btn {
+        padding: 8px;
+        min-width: 100px;
+        margin-bottom: 10px;
+        border: 1px solid green;
+        background-color: green;
+        color: white;
+    }
+    .models_data {
+        max-width: 80%;
+        padding: 10px;
+        border: 1px solid #aaa;
+        margin-bottom: 10px;
+    }
+    .full-wdith{
+    	width: 100%;
+    	min-height: 400px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <center>
+            <h4>Web tool for creating configuration file</h4>
+        </center>
+        <hr />
+        Add Portals <br />
+        <input type="text" class="input-c" name="" placeholder="portals" id="portals"><br />
+        <code>Use commas to separate, with no space. Eg. admin,member,support</code>
+        <br />
+        <br />
+        Add DB Models <br />
+        <textarea rows="6" type="text" name="" class="textarea-c" placeholder="models" id="models"></textarea><br />
+        <code>
+            Format model_name:attribute,attribute Eg. image:url,extension <br />
+            *** id, createdAt, updatedAt is added by default.
+        </code>
+        <br />
+        <br />
+        <button onclick="generate()" class="btn">GENERATE</button>
+        <br />
+        <br />
+        <div id="generatedContent">
+        </div>
+        <br />
+        <button onclick="generateJSON()" class="btn">GENERATE JSON</button> <br />
+        <textarea id="generatedJSON" class="full-wdith"></textarea>
+    </div>
+    <script type="text/javascript">
+
+    	var complete_json = {
+    		"project":"",
+    		"roles":{},
+    		"models": [],
+    		"controllers" : [],
+    		"portals": [],
+    		"copy": {},
+    		"strings" :{},
+    		"env":{
+
+    		}
+    	}
+    	var model_format = {
+            "name": "",
+            "fields": [],
+            "mapping": {},
+            "join": [],
+            "seed": []
+        };
+        var controller_format =     {
+	        "name": "",
+	        "model": "",
+	        "join": [],
+	        "is_add": true,
+	        "is_edit": true,
+	        "is_delete": true,
+	        "is_bulk_delete": true,
+	        "is_view": true,
+	        "is_view_all": true,
+	        "auth":true,
+	        "filter_fields": [],
+	        "add_fields": [],
+	        "edit_fields":[],
+	        "view_fields": ["id"],
+	        "add_fields_pre": [],
+	        "edit_fields_pre": [],
+	        "portal": "",
+	        "copy": false
+	    };
+	    var default_models = [{
+            "name": "user",
+            "fields": [
+                [
+                    "username",
+                    "string",
+                    {
+                        "allowNull": false,
+                        "unique": true
+                    },
+                    "",
+                    ""
+                ],
+                [
+                    "first_name",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "middle_name",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "last_name",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "gender",
+                    "integer",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "email",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "phone",
+                    "string",
+                    {
+                        "limit": 20
+                    },
+                    "required",
+                    ""
+                ],
+                [
+                    "referer",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "address",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "city",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "state",
+                    "string",
+                    {
+                        "limit": 20
+                    },
+                    "required",
+                    ""
+                ],
+                [
+                    "pincode",
+                    "string",
+                    {
+                        "limit": 7
+                    },
+                    "required",
+                    ""
+                ],
+                [
+                    "location",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "password",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "type",
+                    "integer",
+                    {},
+                    "required",
+                    ""
+                ]
+            ],
+            "mapping": {
+                "type": {
+                },
+                "gender": {
+                    "0": "Male",
+                    "1": "Female",
+                    "2": "Others"
+                }
+            },
+            "join": [],
+            "seed": []
+        }]
+        var default_controller =     {
+	        "name": "user",
+	        "model": "user",
+	        "join": [],
+	        "is_add": true,
+	        "is_edit": true,
+	        "is_delete": true,
+	        "is_bulk_delete": true,
+	        "is_view": true,
+	        "is_view_all": true,
+	        "auth":true,
+	        "filter_fields": ["first_name", "last_name","phone","email","password","role_id"],
+	        "add_fields": ["first_name", "last_name","phone","email","role_id"],
+	        "edit_fields":["first_name", "last_name","phone","email","role_id"],
+	        "view_fields": ["id","first_name", "last_name","phone","email","password","role_id"],
+	        "add_fields_pre": ["username : randomstring.generate(),password: await passwordService.hashPassword(req.body.password),"],
+	        "edit_fields_pre": ["password: await passwordService.hashPassword(req.body.password),"],
+	        "portal": "",
+	        "copy": false
+	    };
+        var portal_format =     {
+	        "name": "",
+	        "view": true,
+	        "login": true,
+	        "forgot_password": true,
+	        "role_id": 0,
+	        "menus": []
+	    };
+	    var menu_format = {
+            "name": "",
+            "controller_name": "",
+            "add": true,
+            "edit": true,
+            "delete": true,
+            "bulkdelete": true,
+            "filter": true,
+            "export": true,
+            "menu_icon": "fas fa-user",
+            "filters":[],
+            "table_header" : ["ID"],
+            "table_body" : ["id|integer"],
+            "add_fields": [],
+            "edit_fields":[]
+        };
+
+        function makeCapitalize(word) {
+        	var words = word.split("_");
+        	return words.map((i) => {
+        		return i[0] ? i[0].toUpperCase()+i.substr(1) : '';
+        	}).join(" ")
+        }
+        function generate() {
+            var models = document.getElementById('models').value.split("\n");
+            var portals = document.getElementById('portals').value.split(",");
+            var table_names = models.map((i) => {
+                return i.split(":")[0];
+            })
+            var div = document.getElementById('generatedContent');
+            div.innerHTML = "";
+
+            for (var i = 0; i < models.length; i++) {
+            	console.log("creating model structure",models[i],models.length,i);
+                var _tablename = models[i].split(":")[0];
+                var _temp_header = `
+                    <div class="models_data">
+					<br /> <b>${_tablename} table </b> <br />
+				`;
+                var _temp_body = '', _temp_footer = '';
+
+                models[i].split(":")[1].split(",").map((item) => {
+                    _temp_body += `
+                        <br />
+						<label>${item} </label>: 	<select id="${_tablename}_${item}" onchange="checkSelectVal(this.value,'${_tablename}_${item}')">
+										<option>INTEGER</option>
+										<option>DOUBLE</option>
+										<option>BOOLEAN</option>
+										<option>STRING</option>
+										<option>TEXT</option>
+										<option>DATE</option>
+										<option>DATEONLY</option>
+                                        <option value="fk">FOREIGN KEY</option>
+									</select>
+                                    <div id="${_tablename}_${item}_mapping_div">
+                                        <br />
+                                        Mappings
+    									<input type="text" placeholder="mappings" id="${_tablename}_${item}_mapping">
+                                    </div>
+                                    <br />
+                                    <div id="${_tablename}_${item}_join_div" style="display:none;">
+                                        JOINS 
+                                        <br />table:                                    
+                                        <select id="${_tablename}_${item}_join_table" data-id="${_tablename}" class="join_table" >
+                                        	<option>user</option>
+                                        </select>
+                                        <br />Field
+                                        <input type="text" id="${_tablename}_${item}_join_field" value="${item}"  />
+                                        <br /> As
+                                        <input type="text" id="${_tablename}_${item}_join_as" value="${_tablename}"  />
+    									<br /> Order
+                                        <select id="${_tablename}_${item}_join_order">
+                                            <option>1:1</option>
+                                            <option>1:N</option>
+                                            <option>N:1</option>
+                                        </select>
+                                    </div>
+					`
+                });
+                _temp_body +=`
+                	Include in portals: <br />                	
+                `;
+                for (var j = 0; j < portals.length; j++) {
+	                _temp_body +=`
+	                	<input type="checkbox" id="${portals[j]}_${_tablename}" />${portals[j]} <br />             	
+	                `;
+                }
+                _temp_footer += "</div>"
+                div.innerHTML += _temp_header+_temp_body+_temp_footer; 
+            }
+            addJoinTables();
+        }
+        function addJoinTables() {
+            var models = document.getElementById('models').value.split("\n");
+            var join_tables = document.getElementsByClassName("join_table");
+            for(var j=0;j<join_tables.length;j++){
+
+                for (var i = 0; i < models.length; i++) {
+
+                    var _tablename = models[i].split(":")[0];
+                    var elem =  document.createElement("option");
+                    elem.value = _tablename;
+                    elem.innerHTML = _tablename;
+
+
+                    if(join_tables[j].attributes["data-id"].value == _tablename)
+                        continue;                    
+                    join_tables[j].appendChild(elem)
+
+                }
+            }
+        }
+        function checkSelectVal(val,divName) {
+            console.log(val,divName);
+            if(val == "fk")
+                document.getElementById(divName+"_join_div").style.display = "";
+            else
+                document.getElementById(divName+"_join_div").style.display = "none";
+
+            if(val == "INTEGER")
+                document.getElementById(divName+"_mapping_div").style.display = "";
+            else
+                document.getElementById(divName+"_mapping_div").style.display = "none";
+        }
+
+    function generateJSON() {
+        var models = document.getElementById('models').value.split("\n");
+        var portals = document.getElementById('portals').value.split(",");
+        var table_names = models.map((i) => {
+            return i.split(":")[0];
+        })
+        var div = document.getElementById('generatedContent');
+        var json = document.getElementById("generatedJSON");
+        var _users;
+        var json_gen = {...complete_json};
+
+
+
+
+        json.value = "";
+
+
+        _users={
+            "name": "user",
+            "fields": [
+                [
+                    "username",
+                    "string",
+                    {
+                        "allowNull": false,
+                        "unique": true
+                    },
+                    "",
+                    ""
+                ],
+                [
+                    "first_name",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "middle_name",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "last_name",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "gender",
+                    "integer",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "email",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "phone",
+                    "string",
+                    {
+                        "limit": 20
+                    },
+                    "required",
+                    ""
+                ],
+                [
+                    "referer",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "address",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "city",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "state",
+                    "string",
+                    {
+                        "limit": 20
+                    },
+                    "required",
+                    ""
+                ],
+                [
+                    "pincode",
+                    "string",
+                    {
+                        "limit": 7
+                    },
+                    "required",
+                    ""
+                ],
+                [
+                    "location",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "password",
+                    "string",
+                    {},
+                    "required",
+                    ""
+                ],
+                [
+                    "type",
+                    "integer",
+                    {},
+                    "required",
+                    ""
+                ]
+            ],
+            "mapping": {
+                "type": {
+                },
+                "gender": {
+                    "0": "Male",
+                    "1": "Female",
+                    "2": "Others"
+                }
+            },
+            "join": [],
+            "seed": []
+        };
+
+        //roles and user type added 
+        for (var i = 0; i < portals.length; i++) {
+        	json_gen.roles[portals[i]] = i;
+        	_users.mapping.type[portals[i]] = i;
+        	_users.seed.push({
+                "id": (i+1),
+                "username": portals[i],
+                "name": portals[i],
+                "email": portals[i]+"@admin.in",
+                "password": "a12345",
+                "type": i	
+        	});
+        	var _tempController = {
+		        "name": "user",
+		        "model": "user",
+		        "join": [],
+		        "is_add": true,
+		        "is_edit": true,
+		        "is_delete": true,
+		        "is_bulk_delete": true,
+		        "is_view": true,
+		        "is_view_all": true,
+		        "auth":true,
+		        "filter_fields": ["first_name", "last_name","phone","email","password","role_id"],
+		        "add_fields": ["first_name", "last_name","phone","email","role_id"],
+		        "edit_fields":["first_name", "last_name","phone","email","role_id"],
+		        "view_fields": ["id","first_name", "last_name","phone","email","password","role_id"],
+		        "add_fields_pre": ["username : randomstring.generate(),password: await passwordService.hashPassword(req.body.password),"],
+		        "edit_fields_pre": ["password: await passwordService.hashPassword(req.body.password),"],
+		        "portal": "",
+		        "copy": false
+		    };;
+        	_tempController.portal = portals[i];	
+        	json_gen.controllers.push(_tempController);
+        }
+
+        json_gen.models.push(_users);
+
+        //models added
+        for (var j = 0; j < models.length; j++) {
+            var _tempModel = {
+	            "name": "",
+	            "fields": [],
+	            "mapping": {},
+	            "join": [],
+	            "seed": []
+	        };
+            var _tempController = {
+		        "name": "",
+		        "model": "",
+		        "join": [],
+		        "is_add": true,
+		        "is_edit": true,
+		        "is_delete": true,
+		        "is_bulk_delete": true,
+		        "is_view": true,
+		        "is_view_all": true,
+		        "auth":true,
+		        "filter_fields": [],
+		        "add_fields": [],
+		        "edit_fields":[],
+		        "view_fields": ["id"],
+		        "add_fields_pre": [],
+		        "edit_fields_pre": [],
+		        "portal": "",
+		        "copy": false
+		    };
+            var _tablename = models[j].split(":")[0];
+
+            console.log("controlerr name ",_tablename);
+            _tempModel.name = _tablename;
+            _tempController.name = _tablename;
+            _tempController.model = _tablename;
+
+            models[j].split(":")[1].split(",").map((item) => {
+                var dataType = document.getElementById(_tablename+"_"+item).value;
+                var mappings = document.getElementById(_tablename+"_"+item+"_mapping").value;
+                if(dataType != "fk"){
+                	_tempModel.fields.push(
+		                [
+		                	`${item}`,
+                            dataType,
+		                    {},
+		                    "required",
+		                    "required"
+		                ],
+                	);
+                	_tempController.filter_fields.push(item);
+                	_tempController.add_fields.push(item);
+                	_tempController.edit_fields.push(item);
+					_tempController.view_fields.push(item);
+                	
+
+                }else {
+                	var db_name = document.getElementById(_tablename+"_"+item+"_join_table").value;
+                	var db_as = document.getElementById(_tablename+"_"+item+"_join_as").value;
+                	var db_order = document.getElementById(_tablename+"_"+item+"_join_order").value;
+                	var db_field = document.getElementById(_tablename+"_"+item+"_join_field").value;
+
+                	db_as = db_as.length>1 ? db_as : _tablename;
+                	db_field = db_field.length > 1 ? db_field : item+"_id"; 
+
+                	if(db_name && db_name.length>1)
+                	_tempModel.join.push(                		
+		                {
+		                    "db" : db_name,
+		                    "as" : db_as,
+		                    "order": db_order,
+		                    "field": db_field
+		                }
+                	);                	
+                }
+                if(mappings.length>0){
+                    var _split = mappings.split(",");
+                    for (var i = 0; i < _split.length; i++) {
+                        _tempModel.mapping[i] = _split[i];
+                    }
+                }
+            });
+
+            for (var k = 0; k < portals.length; k++) {
+
+	            if(!document.getElementById(portals[k]+"_"+_tablename)){
+	            	continue;
+	            }
+
+
+            	var _tempController_2 = {..._tempController};
+            	_tempController_2.portal = portals[k];
+            	json_gen.controllers.push(_tempController_2);
+            }
+
+
+            json_gen.models.push(_tempModel);
+        }
+        console.log(json_gen);
+
+        for (var i = 0; i < portals.length; i++) {
+	        var _tempPortal = {
+		        "name": "",
+		        "view": true,
+		        "login": true,
+		        "forgot_password": true,
+		        "role_id": 0,
+		        "menus": []
+		    };    	
+	        _tempPortal.name = portals[i];
+	        _tempPortal.menus.push(        
+	        {
+	            "name": "Users",
+	            "controller_name": "user",
+	            "add": true,
+	            "edit": true,
+	            "delete": true,
+	            "bulkdelete": true,
+	            "filter": true,
+	            "export": true,
+	            "menu_icon": "fas fa-user",
+	            "filters":["first_name", "last_name","phone","email","password","role_id"],
+	            "table_header" : ["ID","First Name","Last Name","Phone","Email","role_id"],
+	            "table_body" : ["id|integer","first_name|string","last_name|string","phone|string","email|string","role_id|mapping"],
+	            "add_fields": ["first_name|string", "last_name|string","phone|string","email|email","password|password","role_id|integer"],
+	            "edit_fields":["first_name|string", "last_name|string","phone|string","email|email","password|password","role_id|integer"]
+	        });
+
+	        console.log("Menu creation start");
+	        for (var p = 0; p < models.length; p++) {
+	            var _tablename = models[p].split(":")[0];
+	            var _tempMenu = {
+		            "name": "",
+		            "controller_name": "",
+		            "add": true,
+		            "edit": true,
+		            "delete": true,
+		            "bulkdelete": true,
+		            "filter": true,
+		            "export": true,
+		            "menu_icon": "fas fa-user",
+		            "filters":[],
+		            "table_header" : ["ID"],
+		            "table_body" : ["id|integer"],
+		            "add_fields": [],
+		            "edit_fields":[]
+		        };
+	            if(!document.getElementById(portals[i]+"_"+_tablename)){
+	            	continue;
+	            }
+
+	            _tempMenu.name = _tablename;
+	            _tempMenu.controller_name = _tablename;
+
+		        console.log("",_tempMenu.name);
+	            console.log(_tempMenu);
+
+	            models[p].split(":")[1].split(",").map((item) => {
+	            	console.log(item);
+	                var dataType = document.getElementById(_tablename+"_"+item).value;
+	                var mappings = document.getElementById(_tablename+"_"+item+"_mapping").value;
+	                	_tempMenu.filters.push(item);
+	                	_tempMenu.table_header.push(makeCapitalize(item));
+	                	_tempMenu.table_body.push(item+"|"+dataType);
+	                if(dataType != "fk"){
+	                	_tempMenu.add_fields.push( mappings.length>1 ? item+"|mappings"  : item+"|"+dataType);
+	                	_tempMenu.edit_fields.push( mappings.length>1 ? item+"|mappings"  : item+"|"+dataType);	           
+	                }
+	                else {
+	                	_tempMenu.add_fields.push(item+"|"+dataType);
+	                	_tempMenu.edit_fields.push( item+"|"+dataType);
+	                }
+	            });
+	            console.log("menu added ",_tempMenu);
+	            _tempPortal.menus.push(_tempMenu);
+
+	        }
+	        json_gen.portals.push(_tempPortal);
+        }
+        console.log(json_gen);
+
+        json.value = JSON.stringify(json_gen,null,2);
+
+    }
+    </script>
+</body>
+
+</html>

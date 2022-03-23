@@ -1,0 +1,221 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"
+    ></script>
+    <script src="../js/cookie.umd.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+      integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body class="bg-light">
+    <div class="row justify-content-md-center m-2 mt-5">
+      <div class="col-md-4 text-center">
+        <h4 class="text-center mt-5">Umbrella Solution</h4>
+        <div class="card shadow p-3 pb-4">
+          <form action="#" class="form" id="otpForm">
+            <h4>LOGIN</h4>
+            <div class="input-group mt-2 mb-3">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="phone number +918231313123"
+                id="phoneNumber"
+                required
+              />
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-envelope"></span>
+                </div>
+              </div>
+            </div>
+            <button
+              class="btn btn-primary btn-sm ml-2 btn-block"
+              id="sign-in-button"
+              type="submit"
+            >
+              SEND OTP
+            </button>
+          </form>
+          <form action="#" id="verifyForm" class="form">
+            <div class="input-group mb-3 mt-5">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="OTP"
+                id="code"
+              />
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+              </div>
+              <button
+                class="btn btn-primary btn-sm ml-2 btn-block"
+                id="verify-button"
+              >
+                VERIFY
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $("#loginForm").on("submit", (ev) => {
+        ev.preventDefault();
+        $.ajax({
+          type: "POST",
+          url: "/client/login",
+          data: {
+            email: $("#email").val(),
+            password: $("#password").val(),
+            role_id: 1,
+          },
+          success: (response) => {
+            console.log(response);
+            if (response.status == "success") {
+              Cookies.set("token", response.token);
+              location.href = response.redirect;
+            } else {
+              alert(response.message);
+            }
+          },
+          fail: (err) => {
+            console.log(err);
+          },
+        });
+      });
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-auth.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyC40PD-rMxULWlf02uQl8q6VPYBZuH1y44",
+        authDomain: "sportz-d63ba.firebaseapp.com",
+        projectId: "sportz-d63ba",
+        storageBucket: "sportz-d63ba.appspot.com",
+        messagingSenderId: "690840664267",
+        appId: "1:690840664267:web:152b475d37c774e353034e",
+        measurementId: "G-6W46YLXH8Y",
+      };
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+        "sign-in-button",
+        {
+          size: "invisible",
+          callback: (response) => {
+            console.log("Recaptcha response ");
+            console.log(response);
+            onSignInSubmit();
+          },
+        }
+      );
+      $("#otpForm").on("submit", (ev) => {
+        ev.preventDefault();
+        sendOTP($("#phoneNumber").val());
+      });
+      $("#verifyForm").on("submit", (ev) => {
+        ev.preventDefault();
+        verifyOTP($("#code").val());
+      });
+
+      function sendOTP(phoneNumber) {
+        appVerifier = window.recaptchaVerifier;
+        firebase
+          .auth()
+          .signInWithPhoneNumber(phoneNumber, appVerifier)
+          .then((confirmationResult) => {
+            console.log(confirmationResult);
+            window.confirmationResult = confirmationResult;
+          })
+          .catch((error) => {
+            console.log(error);
+            window.recaptchaVerifier.render().then(function (widgetId) {
+              grecaptcha.reset(widgetId);
+            });
+          });
+      }
+      function verifyOTP(code) {
+        confirmationResult
+          .confirm(code)
+          .then((result) => {
+            console.log(result);
+            user = result.user;
+            console.log("usr wth id " + user.uid);
+            firebase
+              .auth()
+              .currentUser.getIdToken(true)
+              .then(function (idToken) {
+                console.log(idToken);
+              });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+      function getClientToken(token) {
+        fetch("/client/otplogin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: token }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+      /* getClientToken(
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6ImMxMGM5MGJhNGMzNjYzNTE2ZTA3MDdkMGU5YTg5NDgxMDYyODUxNTgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc3BvcnR6LWQ2M2JhIiwiYXVkIjoic3BvcnR6LWQ2M2JhIiwiYXV0aF90aW1lIjoxNjQzNzkxNzA2LCJ1c2VyX2lkIjoiWTQ2T092UFAwVU5aWEl4WlJKU29rTUl4YzBJMyIsInN1YiI6Ilk0Nk9PdlBQMFVOWlhJeFpSSlNva01JeGMwSTMiLCJpYXQiOjE2NDM3OTE3MDcsImV4cCI6MTY0Mzc5NTMwNywicGhvbmVfbnVtYmVyIjoiKzkxODYzODkwMDA3OSIsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsicGhvbmUiOlsiKzkxODYzODkwMDA3OSJdfSwic2lnbl9pbl9wcm92aWRlciI6InBob25lIn19.ayVXXc3Rz-svAs16nM1effT01mNfjI4s_rzz48kYUXgqshn_hjBWAXU-q_OXjcPl2Kgs21MUuAcMWUNEexfdMpAQm7xybABy1NW1rIg2LnWHBOjmFBJjBxJ-gT24wtAI7-I3EKPq6BQI5ybAMFuV3A7M9xGPLcOUUJ1s0V1Ydnll1C6LE6jvVFkB_FGVjzwM363Pbgm4V7y6kA_VMfFkTd-rDu_aPVKiz29r0ynYyd8cKJP8f2mn4puckyIB9LmlVbWQpRnLwOvt3YSY98txJUwdjPBPBk-z5qO-FB0FGNmKAaAgxeBSu4Qak9J7UDYBDZxsD3tNWqbuRH81_56uTQ"
+      );
+	  */
+    </script>
+    <style type="text/css">
+      .input-group-text {
+        height: 100%;
+        background-color: white;
+      }
+      .input-group input {
+        border-right: 0px;
+        font-size: 14px;
+      }
+      .btn-block {
+        width: 100%;
+        font-size: 14px;
+      }
+      .input-group-text span {
+        border-left: 0px;
+        color: #7b7b7b;
+      }
+      .form {
+        color: #555;
+      }
+      .card {
+        border: 1px solid #cdcdf7;
+      }
+    </style>
+  </body>
+</html>

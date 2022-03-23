@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta
+      name="author"
+      content="Umbrella Solution"
+    />
+    <meta name="generator" content="Hugo 0.83.1" />
+    <title>Admin Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="canonical"
+      href="https://getbootstrap.com/docs/5.0/examples/dashboard/"
+    />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous">    
+
+    <!-- Bootstrap core CSS -->
+    <link href="./../css/bootstrap.min.css" rel="stylesheet" />
+    <script src="./../js/cookie.umd.min.js"></script>
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="./../css/dashboard.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header
+      class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow"
+    >
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 p-3 text-center" href="#">Umbrella Solution</a>
+      <button
+        class="navbar-toggler position-absolute d-md-none collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#sidebarMenu"
+        aria-controls="sidebarMenu"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </header>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav
+          id="sidebarMenu"
+          class="col-md-3 col-lg-2 d-md-block bg-light sidebar bg-dark collapse"
+        >
+          <div class="position-sticky pt-4" style="width: 90%;margin-left: 5%;">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link  active" aria-current="page" href="#bm">
+                  <i class="fas fa-blog"></i>
+                  Board Management
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link " aria-current="page" href="#gm">
+                  <i class="fas fa-blog"></i>
+                  Grade Management
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link " aria-current="page" href="#changepassword">
+                  <i class="fas fa-key"></i>
+                  Change Password
+                </a>
+              </li>
+
+            </ul>
+          </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-md-3 panels" id="bm">
+          <div
+            class="
+              d-flex
+              justify-content-between
+              flex-wrap flex-md-nowrap
+              align-items-center
+              pt-3
+              pb-2
+              mb-3
+              border-bottom
+            ">
+            <h1 class="h2">Board Management</h1>            
+          </div>
+            <div class="table-responsive">
+              <button id="addBoardBtn" class="btn btn-info mb-2 float-r" >Add</button>
+              <table class="table table-bordered" id="gradeTable">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Board</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="boardTableBody"></tbody>
+              </table>
+            </div>
+        </main>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 panels" id="changepassword" style="display: none;">
+          <div
+            class="
+              d-flex
+              justify-content-between
+              flex-wrap flex-md-nowrap
+              align-items-center
+              pt-3
+              pb-2
+              mb-3
+              border-bottom
+            ">
+            <h1 class="h2">Change Password</h1>            
+          </div>
+            <form action="#" class="col-sm-12 col-md-6" id="passwordForm">
+              <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="newPassword1" placeholder="">
+              </div>
+              <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="newPassword2" placeholder="">
+              </div>
+              <button class="btn btn-primary">Submit</button>
+            </form>
+        </main>
+      </div>
+    </div>
+
+
+
+
+
+    <!--Board Modal ADD-->
+    <div class="modal fade" id="addBoardModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Board</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form action="#" id="addBoardForm">
+                  <input type="text" id="addBoardInput" name="" class="form-control" placeholder="Board" required>
+                  <button class="btn btn-primary mt-2" >Submit</button>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Board Modal EDIT -->
+    <div class="modal fade" id="editBoardModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Board</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form action="#" id="editBoardForm">
+                  <input type="text" id="editBoardInput" name="" class="form-control" placeholder="Board" required>
+                  <input type="hidden" id="editBoardId" name="">
+                  <button class="btn btn-primary mt-2" >Submit</button>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="./../js/bootstrap.bundle.min.js"></script>
+    <script src="./../js/sweetalert.min.js"></script>
+    <script src="./../js/dashboard.js"></script>
+    <script src="./../js/common_script.js"></script>
+
+    <script src="./js/script.js"></script>
+  </body>
+</html>

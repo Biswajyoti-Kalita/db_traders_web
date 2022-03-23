@@ -1,0 +1,3441 @@
+{
+  "project": "db_traders_web",
+  "roles": {
+    "admin": 0,
+    "client": 1,
+    "others": 2
+  },
+  "models": [
+    {
+      "name": "user",
+      "fields": [
+        [
+          "username",
+          "string",
+          {
+            "allowNull": false,
+            "unique": true
+          },
+          "",
+          ""
+        ],
+        ["first_name", "string", {}, "required", ""],
+        ["middle_name", "string", {}, "required", ""],
+        ["last_name", "string", {}, "required", ""],
+        ["gender", "integer", {}, "required", ""],
+        ["email", "string", {}, "required", ""],
+        [
+          "phone",
+          "string",
+          {
+            "limit": 20
+          },
+          "required",
+          ""
+        ],
+        ["referer", "string", {}, "required", ""],
+        ["location", "string", {}, "required", ""],
+        ["password", "string", {}, "required", ""],
+        ["role_id", "integer", {}, "required", ""],
+        ["status", "integer", {}, "required", ""],
+        [
+          "is_verified",
+          "integer",
+          {
+            "defaultValue": 0
+          },
+          "required",
+          ""
+        ]
+      ],
+      "mapping": {
+        "role_id": {
+          "0": "Admin",
+          "1": "Client",
+          "2": "Others"
+        },
+        "gender": {
+          "0": "Male",
+          "1": "Female",
+          "2": "Others"
+        },
+        "is_verified": {
+          "0": "No",
+          "1": "Yes"
+        },
+        "status": { "0": "Inactive", "1": "Active", "2": "Suspended" }
+      },
+      "join": [
+        {
+          "db": "address",
+          "as": "addresses",
+          "order": "1:1",
+          "field": "user_id"
+        }
+      ],
+      "seed": [
+        {
+          "id": 1,
+          "username": "admin",
+          "name": "admin",
+          "email": "admin@admin.in",
+          "password": "a12345",
+          "role_id": 0
+        },
+        {
+          "id": 2,
+          "username": "client",
+          "name": "client",
+          "email": "client@admin.in",
+          "password": "a12345",
+          "role_id": 1
+        },
+        {
+          "id": 3,
+          "username": "others",
+          "name": "others",
+          "email": "others@admin.in",
+          "password": "a12345",
+          "role_id": 2
+        }
+      ]
+    },
+    {
+      "name": "brand",
+      "fields": [
+        ["name", "STRING", {}, "required", "required"],
+        ["image", "TEXT", {}, "required", "required"]
+      ],
+      "mapping": {},
+      "join": [],
+      "seed": []
+    },
+    {
+      "name": "category",
+      "fields": [
+        ["name", "STRING", {}, "required", "required"],
+        ["parent_id", "INTEGER", {}, "required", "required"],
+        ["image_url", "TEXT", {}, "required", "required"]
+      ],
+      "mapping": {},
+      "join": [
+        {
+          "db": "category",
+          "as": "parent",
+          "order": "1:1",
+          "field": "parent_id"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "coupon",
+      "fields": [
+        ["code", "STRING", {}, "required", "required"],
+        ["valid_till", "DATEONLY", {}, "required", "required"],
+        ["discount_amount", "DOUBLE", {}, "required", "required"],
+        ["status", "INTEGER", {}, "required", "required"]
+      ],
+      "mapping": {
+        "status": {
+          "0": "Invalid",
+          "1": "Valid"
+        }
+      },
+      "join": [],
+      "seed": []
+    },
+    {
+      "name": "image",
+      "fields": [
+        ["image_url", "TEXT", {}, "required", "required"],
+        ["size", "INTEGER", {}, "required", "required"]
+      ],
+      "mapping": {},
+      "join": [
+        {
+          "db": "product",
+          "as": "product",
+          "order": "1:1",
+          "field": "product_id"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "product",
+      "fields": [
+        ["uuid", "STRING", {}, "required", "required"],
+        ["barcode", "STRING", {}, "required", "required"],
+        ["name", "STRING", {}, "required", "required"],
+        ["tags", "STRING", {}, "required", "required"],
+        ["colors", "STRING", {}, "required", "required"],
+        ["cost_price", "DOUBLE", {}, "required", "required"],
+        ["selling_price", "DOUBLE", {}, "required", "required"],
+        ["tax", "DOUBLE", {}, "required", "required"],
+        ["cgst", "DOUBLE", {}, "required", "required"],
+        ["sgst", "DOUBLE", {}, "required", "required"],
+        ["igst", "DOUBLE", {}, "required", "required"],
+        ["discount", "DOUBLE", {}, "required", "required"],
+        ["description", "TEXT", {}, "required", "required"]
+      ],
+      "mapping": {},
+      "join": [
+        {
+          "db": "category",
+          "as": "category",
+          "order": "1:1",
+          "field": "category_id"
+        },
+        {
+          "db": "category",
+          "as": "sub_category",
+          "order": "1:1",
+          "field": "sub_category_id"
+        },
+        {
+          "db": "brand",
+          "as": "brand",
+          "order": "1:1",
+          "field": "brand_id"
+        },
+        {
+          "db": "image",
+          "as": "images",
+          "order": "1:N",
+          "field": "images"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "review",
+      "fields": [
+        ["rating", "INTEGER", {}, "required", "required"],
+        ["comments", "TEXT", {}, "required", "required"],
+        ["status", "INTEGER", {}, "required", "required"]
+      ],
+      "mapping": {
+        "rating": {
+          "0": "1",
+          "1": "2",
+          "2": "3",
+          "3": "4",
+          "4": "5"
+        },
+        "status": { "0": "Under-review", "1": "Approved", "2": "False review" }
+      },
+      "join": [
+        {
+          "db": "user",
+          "as": "user",
+          "order": "1:1",
+          "field": "user_id"
+        },
+        {
+          "db": "product",
+          "as": "product",
+          "order": "1:1",
+          "field": "product_id"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "cart",
+      "fields": [
+        ["quantity", "INTEGER", {}, "required", "required"],
+        ["status", "INTEGER", {}, "required", "required"]
+      ],
+      "mapping": {
+        "status": {
+          "0": "cart",
+          "1": "watchlist"
+        }
+      },
+      "join": [
+        {
+          "db": "product",
+          "as": "product",
+          "order": "1:1",
+          "field": "product_id"
+        },
+        {
+          "db": "user",
+          "as": "user",
+          "order": "1:1",
+          "field": "user_id"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "address",
+      "fields": [
+        ["landmark", "STRING", {}, "required", "required"],
+        ["address_line_1", "STRING", {}, "required", "required"],
+        ["address_line_2", "STRING", {}, "required", "required"],
+        ["city", "STRING", {}, "required", "required"],
+        ["state", "STRING", {}, "required", "required"],
+        ["pincode", "STRING", {}, "required", "required"],
+        ["tag", "STRING", {}, "required", "required"]
+      ],
+      "mapping": {},
+      "join": [
+        {
+          "db": "user",
+          "as": "user",
+          "order": "1:1",
+          "field": "user_id"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "order",
+      "fields": [
+        ["bill_no", "STRING", {}, "required", "required"],
+        ["delivery_status", "INTEGER", {}, "required", "required"],
+        ["cancelled_reason", "STRING", {}, "required", "required"],
+        ["payment_status", "INTEGER", {}, "required", "required"],
+        ["order_status", "INTEGER", {}, "required", "required"],
+        ["payment_method", "STRING", {}, "required", "required"],
+        ["total_price", "DOUBLE", {}, "required", "required"]
+      ],
+      "mapping": {
+        "delivery_status": {
+          "0": "Requested",
+          "1": "Accepted",
+          "2": "In-Transit",
+          "3": "Delivered",
+          "4": "Cancelled"
+        },
+        "payment_status": {
+          "0": "Pending",
+          "1": "Paid"
+        }
+      },
+      "join": [
+        {
+          "db": "order_item",
+          "as": "order_items",
+          "order": "1:N",
+          "field": "order_items"
+        },
+        {
+          "db": "user",
+          "as": "user",
+          "order": "1:1",
+          "field": "user_id"
+        },
+        {
+          "db": "address",
+          "as": "address",
+          "order": "1:1",
+          "field": "address_id"
+        },
+        {
+          "db": "coupon",
+          "as": "coupon",
+          "order": "1:1",
+          "field": "coupon_id"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "order_item",
+      "fields": [
+        ["quantity", "INTEGER", {}, "required", "required"],
+        ["cost_price", "DOUBLE", {}, "required", "required"],
+        ["selling_price", "DOUBLE", {}, "required", "required"],
+        ["tax", "DOUBLE", {}, "required", "required"],
+        ["cgst", "DOUBLE", {}, "required", "required"],
+        ["sgst", "DOUBLE", {}, "required", "required"],
+        ["igst", "DOUBLE", {}, "required", "required"],
+        ["discount", "DOUBLE", {}, "required", "required"]
+      ],
+      "mapping": {},
+      "join": [
+        {
+          "db": "product",
+          "as": "product",
+          "order": "1:1",
+          "field": "product_id"
+        },
+        {
+          "db": "user",
+          "as": "user",
+          "order": "1:1",
+          "field": "user_id"
+        },
+        {
+          "db": "order",
+          "as": "order",
+          "order": "1:1",
+          "field": "order_id"
+        },
+        {
+          "db": "coupon",
+          "as": "coupon",
+          "order": "1:1",
+          "field": "coupon_id"
+        }
+      ],
+      "seed": []
+    },
+    {
+      "name": "payment",
+      "fields": [
+        ["payment_id", "STRING", {}, "required", "required"],
+        ["oid", "STRING", {}, "required", "required"],
+        ["payment_status", "INTEGER", {}, "required", "required"]
+      ],
+      "mapping": {
+        "payment_status": {
+          "0": "Pending",
+          "1": "Paid",
+          "2": "Failed"
+        }
+      },
+      "join": [
+        {
+          "db": "order",
+          "as": "order",
+          "order": "1:1",
+          "field": "order_id"
+        }
+      ],
+      "seed": []
+    }
+  ],
+  "controllers": [
+    {
+      "name": "user",
+      "model": "user",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "edit_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "view_fields": [
+        "id",
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields_pre": [
+        "username : randomstring.generate(),password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "edit_fields_pre": [
+        "password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "user",
+      "model": "user",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "edit_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "view_fields": [
+        "id",
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields_pre": [
+        "username : randomstring.generate(),password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "edit_fields_pre": [
+        "password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "user",
+      "model": "user",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "edit_fields": ["first_name", "last_name", "phone", "email", "role_id"],
+      "view_fields": [
+        "id",
+        "first_name",
+        "last_name",
+        "phone",
+        "email",
+        "password",
+        "role_id"
+      ],
+      "add_fields_pre": [
+        "username : randomstring.generate(),password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "edit_fields_pre": [
+        "password: await passwordService.hashPassword(req.body.password),"
+      ],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "brand",
+      "model": "brand",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["name", "image"],
+      "add_fields": ["name", "image"],
+      "edit_fields": ["name", "image"],
+      "view_fields": ["id", "name", "image"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "brand",
+      "model": "brand",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["name", "image"],
+      "add_fields": ["name", "image"],
+      "edit_fields": ["name", "image"],
+      "view_fields": ["id", "name", "image"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "brand",
+      "model": "brand",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["name", "image"],
+      "add_fields": ["name", "image"],
+      "edit_fields": ["name", "image"],
+      "view_fields": ["id", "name", "image"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "category",
+      "model": "category",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["name", "parent", "image_url"],
+      "add_fields": ["name", "parent", "image_url"],
+      "edit_fields": ["name", "parent", "image_url"],
+      "view_fields": ["id", "name", "parent", "image_url"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "category",
+      "model": "category",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["name", "parent", "image_url"],
+      "add_fields": ["name", "parent", "image_url"],
+      "edit_fields": ["name", "parent", "image_url"],
+      "view_fields": ["id", "name", "parent", "image_url"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "category",
+      "model": "category",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["name", "parent", "image_url"],
+      "add_fields": ["name", "parent", "image_url"],
+      "edit_fields": ["name", "parent", "image_url"],
+      "view_fields": ["id", "name", "parent", "image_url"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "coupon",
+      "model": "coupon",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["code", "valid_till", "discount_amount"],
+      "add_fields": ["code", "valid_till", "discount_amount"],
+      "edit_fields": ["code", "valid_till", "discount_amount"],
+      "view_fields": ["id", "code", "valid_till", "discount_amount"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "coupon",
+      "model": "coupon",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["code", "valid_till", "discount_amount"],
+      "add_fields": ["code", "valid_till", "discount_amount"],
+      "edit_fields": ["code", "valid_till", "discount_amount"],
+      "view_fields": ["id", "code", "valid_till", "discount_amount"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "coupon",
+      "model": "coupon",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["code", "valid_till", "discount_amount"],
+      "add_fields": ["code", "valid_till", "discount_amount"],
+      "edit_fields": ["code", "valid_till", "discount_amount"],
+      "view_fields": ["id", "code", "valid_till", "discount_amount"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "image",
+      "model": "image",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["image_url", "size"],
+      "add_fields": ["image_url", "size"],
+      "edit_fields": ["image_url", "size"],
+      "view_fields": ["id", "image_url", "size"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "image",
+      "model": "image",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["image_url", "size"],
+      "add_fields": ["image_url", "size"],
+      "edit_fields": ["image_url", "size"],
+      "view_fields": ["id", "image_url", "size"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "image",
+      "model": "image",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["image_url", "size"],
+      "add_fields": ["image_url", "size"],
+      "edit_fields": ["image_url", "size"],
+      "view_fields": ["id", "image_url", "size"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "product",
+      "model": "product",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "add_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "edit_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "view_fields": [
+        "id",
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "product",
+      "model": "product",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "add_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "edit_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "view_fields": [
+        "id",
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "product",
+      "model": "product",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "add_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "edit_fields": [
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "view_fields": [
+        "id",
+        "uuid",
+        "barcode",
+        "name",
+        "tags",
+        "colors",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount",
+        "description"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "review",
+      "model": "review",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["rating", "comments"],
+      "add_fields": ["rating", "comments"],
+      "edit_fields": ["rating", "comments"],
+      "view_fields": ["id", "rating", "comments"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "review",
+      "model": "review",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["rating", "comments"],
+      "add_fields": ["rating", "comments"],
+      "edit_fields": ["rating", "comments"],
+      "view_fields": ["id", "rating", "comments"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "review",
+      "model": "review",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["rating", "comments"],
+      "add_fields": ["rating", "comments"],
+      "edit_fields": ["rating", "comments"],
+      "view_fields": ["id", "rating", "comments"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "cart",
+      "model": "cart",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["quantity", "status"],
+      "add_fields": ["quantity", "status"],
+      "edit_fields": ["quantity", "status"],
+      "view_fields": ["id", "quantity", "status"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "cart",
+      "model": "cart",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["quantity", "status"],
+      "add_fields": ["quantity", "status"],
+      "edit_fields": ["quantity", "status"],
+      "view_fields": ["id", "quantity", "status"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "cart",
+      "model": "cart",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["quantity", "status"],
+      "add_fields": ["quantity", "status"],
+      "edit_fields": ["quantity", "status"],
+      "view_fields": ["id", "quantity", "status"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "address",
+      "model": "address",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "add_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "edit_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "view_fields": [
+        "id",
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "address",
+      "model": "address",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "add_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "edit_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "view_fields": [
+        "id",
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "address",
+      "model": "address",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "add_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "edit_fields": [
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "view_fields": [
+        "id",
+        "landmark",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "tag"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "order",
+      "model": "order",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "add_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "edit_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "view_fields": [
+        "id",
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "order",
+      "model": "order",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "add_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "edit_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "view_fields": [
+        "id",
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "order",
+      "model": "order",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "add_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "edit_fields": [
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "view_fields": [
+        "id",
+        "bill_no",
+        "delivery_status",
+        "payment_status",
+        "order_status",
+        "payment_method",
+        "total_price"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "order_item",
+      "model": "order_item",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "add_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "edit_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "view_fields": [
+        "id",
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "order_item",
+      "model": "order_item",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "add_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "edit_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "view_fields": [
+        "id",
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "order_item",
+      "model": "order_item",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "add_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "edit_fields": [
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "view_fields": [
+        "id",
+        "quantity",
+        "cost_price",
+        "selling_price",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "discount"
+      ],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    },
+    {
+      "name": "payment",
+      "model": "payment",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["payment_id", "oid", "payment_status"],
+      "add_fields": ["payment_id", "oid", "payment_status"],
+      "edit_fields": ["payment_id", "oid", "payment_status"],
+      "view_fields": ["id", "payment_id", "oid", "payment_status"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "admin",
+      "copy": false
+    },
+    {
+      "name": "payment",
+      "model": "payment",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["payment_id", "oid", "payment_status"],
+      "add_fields": ["payment_id", "oid", "payment_status"],
+      "edit_fields": ["payment_id", "oid", "payment_status"],
+      "view_fields": ["id", "payment_id", "oid", "payment_status"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "client",
+      "copy": false
+    },
+    {
+      "name": "payment",
+      "model": "payment",
+      "join": [],
+      "is_add": true,
+      "is_edit": true,
+      "is_delete": true,
+      "is_bulk_delete": true,
+      "is_view": true,
+      "is_view_all": true,
+      "auth": true,
+      "filter_fields": ["payment_id", "oid", "payment_status"],
+      "add_fields": ["payment_id", "oid", "payment_status"],
+      "edit_fields": ["payment_id", "oid", "payment_status"],
+      "view_fields": ["id", "payment_id", "oid", "payment_status"],
+      "add_fields_pre": [],
+      "edit_fields_pre": [],
+      "portal": "others",
+      "copy": false
+    }
+  ],
+  "portals": [
+    {
+      "name": "admin",
+      "view": true,
+      "login": true,
+      "forgot_password": true,
+      "role_id": 0,
+      "menus": [
+        {
+          "name": "Users",
+          "controller_name": "user",
+          "model": "user",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-users fa-fw",
+          "filters": [
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "password",
+            "role_id"
+          ],
+          "table_header": [
+            "ID",
+            "First Name",
+            "Last Name",
+            "Phone",
+            "Email",
+            "role_id"
+          ],
+          "table_body": [
+            "id|integer",
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|string",
+            "role_id|mapping"
+          ],
+          "add_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ],
+          "edit_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ]
+        },
+        {
+          "name": "brand",
+          "controller_name": "brand",
+          "model": "brand",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-copyright fa-fw",
+          "filters": ["name", "image"],
+          "table_header": ["ID", "Name", "Image"],
+          "table_body": ["id|integer", "name|STRING", "image|TEXT"],
+          "add_fields": ["name|STRING", "image|TEXT"],
+          "edit_fields": ["name|STRING", "image|TEXT"]
+        },
+        {
+          "name": "category",
+          "controller_name": "category",
+          "model": "category",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-sitemap fa-fw",
+          "filters": ["name", "parent", "image_url"],
+          "table_header": ["ID", "Name", "Parent", "Image Url"],
+          "table_body": [
+            "id|integer",
+            "name|STRING",
+            "parent|INTEGER",
+            "image_url|TEXT"
+          ],
+          "add_fields": ["name|STRING", "parent|INTEGER", "image_url|TEXT"],
+          "edit_fields": ["name|STRING", "parent|INTEGER", "image_url|TEXT"]
+        },
+        {
+          "name": "coupon",
+          "controller_name": "coupon",
+          "model": "coupon",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-percent fa-fw",
+          "filters": ["code", "valid_till", "discount_amount"],
+          "table_header": ["ID", "Code", "Valid Till", "Discount Amount"],
+          "table_body": [
+            "id|integer",
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ],
+          "add_fields": [
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ],
+          "edit_fields": [
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ]
+        },
+        {
+          "name": "image",
+          "controller_name": "image",
+          "model": "image",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-images fa-fw",
+          "filters": ["image_url", "size", "product_id"],
+          "table_header": ["ID", "Image Url", "Size", "Product Id"],
+          "table_body": [
+            "id|integer",
+            "image_url|TEXT",
+            "size|INTEGER",
+            "product_id|fk"
+          ],
+          "add_fields": ["image_url|TEXT", "size|INTEGER", "product_id|fk"],
+          "edit_fields": ["image_url|TEXT", "size|INTEGER", "product_id|fk"]
+        },
+        {
+          "name": "product",
+          "controller_name": "product",
+          "model": "product",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fab fa-product-hunt fa-fw",
+          "filters": [
+            "uuid",
+            "barcode",
+            "name",
+            "category_id",
+            "sub_category_id",
+            "tags",
+            "brand_id",
+            "colors",
+            "cost_price",
+            "selling_price",
+            "tax",
+            "cgst",
+            "sgst",
+            "igst",
+            "discount",
+            "description",
+            "images"
+          ],
+          "table_header": [
+            "ID",
+            "Uuid",
+            "Barcode",
+            "Name",
+            "Category Id",
+            "Sub Category Id",
+            "Tags",
+            "Brand Id",
+            "Colors",
+            "Cost Price",
+            "Selling Price",
+            "Tax",
+            "Cgst",
+            "Sgst",
+            "Igst",
+            "Discount",
+            "Description",
+            "Images"
+          ],
+          "table_body": [
+            "id|integer",
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ],
+          "add_fields": [
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ],
+          "edit_fields": [
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ]
+        },
+        {
+          "name": "review",
+          "controller_name": "review",
+          "model": "review",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-star fa-fw",
+          "filters": ["rating", "comments", "user_id", "product_id"],
+          "table_header": ["ID", "Rating", "Comments", "User Id", "Product Id"],
+          "table_body": [
+            "id|integer",
+            "rating|INTEGER",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ],
+          "add_fields": [
+            "rating|mappings",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ],
+          "edit_fields": [
+            "rating|mappings",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ]
+        },
+        {
+          "name": "cart",
+          "controller_name": "cart",
+          "model": "cart",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-shopping-cart fa-fw",
+          "filters": ["product_id", "quantity", "status", "user_id"],
+          "table_header": ["ID", "Product Id", "Quantity", "Status", "User Id"],
+          "table_body": [
+            "id|integer",
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|INTEGER",
+            "user_id|fk"
+          ],
+          "add_fields": [
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|mappings",
+            "user_id|fk"
+          ],
+          "edit_fields": [
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|mappings",
+            "user_id|fk"
+          ]
+        },
+        {
+          "name": "address",
+          "controller_name": "address",
+          "model": "address",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-address-card fa-fw",
+          "filters": [
+            "landmark",
+            "address_line_1",
+            "address_line_2",
+            "city",
+            "state",
+            "pincode",
+            "user_id",
+            "tag"
+          ],
+          "table_header": [
+            "ID",
+            "Landmark",
+            "Address Line 1",
+            "Address Line 2",
+            "City",
+            "State",
+            "Pincode",
+            "User Id",
+            "Tag"
+          ],
+          "table_body": [
+            "id|integer",
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ],
+          "add_fields": [
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ],
+          "edit_fields": [
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ]
+        },
+        {
+          "name": "order",
+          "controller_name": "order",
+          "model": "order",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-luggage-cart fa-fw",
+          "filters": [
+            "bill_no",
+            "delivery_status",
+            "payment_status",
+            "order_items",
+            "user_id",
+            "address_id",
+            "order_status",
+            "payment_method",
+            "coupon_id",
+            "total_price"
+          ],
+          "table_header": [
+            "ID",
+            "Bill No",
+            "Delivery Status",
+            "Payment Status",
+            "Order Items",
+            "User Id",
+            "Address Id",
+            "Order Status",
+            "Payment Method",
+            "Coupon Id",
+            "Total Price"
+          ],
+          "table_body": [
+            "id|integer",
+            "bill_no|STRING",
+            "delivery_status|INTEGER",
+            "payment_status|INTEGER",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ],
+          "add_fields": [
+            "bill_no|STRING",
+            "delivery_status|mappings",
+            "payment_status|mappings",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ],
+          "edit_fields": [
+            "bill_no|STRING",
+            "delivery_status|mappings",
+            "payment_status|mappings",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ]
+        },
+        {
+          "name": "order_item",
+          "controller_name": "order_item",
+          "model": "order_item",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-luggage-cart fa-fw",
+          "filters": [
+            "product_id",
+            "user_id",
+            "order_id",
+            "quantity",
+            "cost_price",
+            "selling_price",
+            "tax",
+            "cgst",
+            "sgst",
+            "igst",
+            "discount",
+            "coupon_id"
+          ],
+          "table_header": [
+            "ID",
+            "Product Id",
+            "User Id",
+            "Order Id",
+            "Quantity",
+            "Cost Price",
+            "Selling Price",
+            "Tax",
+            "Cgst",
+            "Sgst",
+            "Igst",
+            "Discount",
+            "Coupon Id"
+          ],
+          "table_body": [
+            "id|integer",
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ],
+          "add_fields": [
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ],
+          "edit_fields": [
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ]
+        },
+        {
+          "name": "payment",
+          "controller_name": "payment",
+          "model": "payment",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-credit-card fa-fw",
+          "filters": ["order_id", "payment_id", "oid", "payment_status"],
+          "table_header": [
+            "ID",
+            "Order Id",
+            "Payment Id",
+            "Oid",
+            "Payment Status"
+          ],
+          "table_body": [
+            "id|integer",
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|INTEGER"
+          ],
+          "add_fields": [
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|mappings"
+          ],
+          "edit_fields": [
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|mappings"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "client",
+      "view": true,
+      "login": true,
+      "forgot_password": true,
+      "role_id": 0,
+      "menus": [
+        {
+          "name": "Users",
+          "controller_name": "user",
+          "model": "user",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "password",
+            "role_id"
+          ],
+          "table_header": [
+            "ID",
+            "First Name",
+            "Last Name",
+            "Phone",
+            "Email",
+            "role_id"
+          ],
+          "table_body": [
+            "id|integer",
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|string",
+            "role_id|mapping"
+          ],
+          "add_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ],
+          "edit_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ]
+        },
+        {
+          "name": "brand",
+          "controller_name": "brand",
+          "model": "brand",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["name", "image"],
+          "table_header": ["ID", "Name", "Image"],
+          "table_body": ["id|integer", "name|STRING", "image|TEXT"],
+          "add_fields": ["name|STRING", "image|TEXT"],
+          "edit_fields": ["name|STRING", "image|TEXT"]
+        },
+        {
+          "name": "category",
+          "controller_name": "category",
+          "model": "category",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["name", "parent", "image_url"],
+          "table_header": ["ID", "Name", "Parent", "Image Url"],
+          "table_body": [
+            "id|integer",
+            "name|STRING",
+            "parent|INTEGER",
+            "image_url|TEXT"
+          ],
+          "add_fields": ["name|STRING", "parent|INTEGER", "image_url|TEXT"],
+          "edit_fields": ["name|STRING", "parent|INTEGER", "image_url|TEXT"]
+        },
+        {
+          "name": "coupon",
+          "controller_name": "coupon",
+          "model": "coupon",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["code", "valid_till", "discount_amount"],
+          "table_header": ["ID", "Code", "Valid Till", "Discount Amount"],
+          "table_body": [
+            "id|integer",
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ],
+          "add_fields": [
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ],
+          "edit_fields": [
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ]
+        },
+        {
+          "name": "image",
+          "controller_name": "image",
+          "model": "image",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["image_url", "size", "product_id"],
+          "table_header": ["ID", "Image Url", "Size", "Product Id"],
+          "table_body": [
+            "id|integer",
+            "image_url|TEXT",
+            "size|INTEGER",
+            "product_id|fk"
+          ],
+          "add_fields": ["image_url|TEXT", "size|INTEGER", "product_id|fk"],
+          "edit_fields": ["image_url|TEXT", "size|INTEGER", "product_id|fk"]
+        },
+        {
+          "name": "product",
+          "controller_name": "product",
+          "model": "product",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "uuid",
+            "barcode",
+            "name",
+            "category_id",
+            "sub_category_id",
+            "tags",
+            "brand_id",
+            "colors",
+            "cost_price",
+            "selling_price",
+            "tax",
+            "cgst",
+            "sgst",
+            "igst",
+            "discount",
+            "description",
+            "images"
+          ],
+          "table_header": [
+            "ID",
+            "Uuid",
+            "Barcode",
+            "Name",
+            "Category Id",
+            "Sub Category Id",
+            "Tags",
+            "Brand Id",
+            "Colors",
+            "Cost Price",
+            "Selling Price",
+            "Tax",
+            "Cgst",
+            "Sgst",
+            "Igst",
+            "Discount",
+            "Description",
+            "Images"
+          ],
+          "table_body": [
+            "id|integer",
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ],
+          "add_fields": [
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ],
+          "edit_fields": [
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ]
+        },
+        {
+          "name": "review",
+          "controller_name": "review",
+          "model": "review",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["rating", "comments", "user_id", "product_id"],
+          "table_header": ["ID", "Rating", "Comments", "User Id", "Product Id"],
+          "table_body": [
+            "id|integer",
+            "rating|INTEGER",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ],
+          "add_fields": [
+            "rating|mappings",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ],
+          "edit_fields": [
+            "rating|mappings",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ]
+        },
+        {
+          "name": "cart",
+          "controller_name": "cart",
+          "model": "cart",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["product_id", "quantity", "status", "user_id"],
+          "table_header": ["ID", "Product Id", "Quantity", "Status", "User Id"],
+          "table_body": [
+            "id|integer",
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|INTEGER",
+            "user_id|fk"
+          ],
+          "add_fields": [
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|mappings",
+            "user_id|fk"
+          ],
+          "edit_fields": [
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|mappings",
+            "user_id|fk"
+          ]
+        },
+        {
+          "name": "address",
+          "controller_name": "address",
+          "model": "address",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "landmark",
+            "address_line_1",
+            "address_line_2",
+            "city",
+            "state",
+            "pincode",
+            "user_id",
+            "tag"
+          ],
+          "table_header": [
+            "ID",
+            "Landmark",
+            "Address Line 1",
+            "Address Line 2",
+            "City",
+            "State",
+            "Pincode",
+            "User Id",
+            "Tag"
+          ],
+          "table_body": [
+            "id|integer",
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ],
+          "add_fields": [
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ],
+          "edit_fields": [
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ]
+        },
+        {
+          "name": "order",
+          "controller_name": "order",
+          "model": "order",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "bill_no",
+            "delivery_status",
+            "payment_status",
+            "order_items",
+            "user_id",
+            "address_id",
+            "order_status",
+            "payment_method",
+            "coupon_id",
+            "total_price"
+          ],
+          "table_header": [
+            "ID",
+            "Bill No",
+            "Delivery Status",
+            "Payment Status",
+            "Order Items",
+            "User Id",
+            "Address Id",
+            "Order Status",
+            "Payment Method",
+            "Coupon Id",
+            "Total Price"
+          ],
+          "table_body": [
+            "id|integer",
+            "bill_no|STRING",
+            "delivery_status|INTEGER",
+            "payment_status|INTEGER",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ],
+          "add_fields": [
+            "bill_no|STRING",
+            "delivery_status|mappings",
+            "payment_status|mappings",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ],
+          "edit_fields": [
+            "bill_no|STRING",
+            "delivery_status|mappings",
+            "payment_status|mappings",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ]
+        },
+        {
+          "name": "order_item",
+          "controller_name": "order_item",
+          "model": "order_item",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "product_id",
+            "user_id",
+            "order_id",
+            "quantity",
+            "cost_price",
+            "selling_price",
+            "tax",
+            "cgst",
+            "sgst",
+            "igst",
+            "discount",
+            "coupon_id"
+          ],
+          "table_header": [
+            "ID",
+            "Product Id",
+            "User Id",
+            "Order Id",
+            "Quantity",
+            "Cost Price",
+            "Selling Price",
+            "Tax",
+            "Cgst",
+            "Sgst",
+            "Igst",
+            "Discount",
+            "Coupon Id"
+          ],
+          "table_body": [
+            "id|integer",
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ],
+          "add_fields": [
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ],
+          "edit_fields": [
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ]
+        },
+        {
+          "name": "payment",
+          "controller_name": "payment",
+          "model": "payment",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["order_id", "payment_id", "oid", "payment_status"],
+          "table_header": [
+            "ID",
+            "Order Id",
+            "Payment Id",
+            "Oid",
+            "Payment Status"
+          ],
+          "table_body": [
+            "id|integer",
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|INTEGER"
+          ],
+          "add_fields": [
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|mappings"
+          ],
+          "edit_fields": [
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|mappings"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "others",
+      "view": true,
+      "login": true,
+      "forgot_password": true,
+      "role_id": 0,
+      "menus": [
+        {
+          "name": "Users",
+          "controller_name": "user",
+          "model": "user",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "password",
+            "role_id"
+          ],
+          "table_header": [
+            "ID",
+            "First Name",
+            "Last Name",
+            "Phone",
+            "Email",
+            "role_id"
+          ],
+          "table_body": [
+            "id|integer",
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|string",
+            "role_id|mapping"
+          ],
+          "add_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ],
+          "edit_fields": [
+            "first_name|string",
+            "last_name|string",
+            "phone|string",
+            "email|email",
+            "password|password",
+            "role_id|integer"
+          ]
+        },
+        {
+          "name": "brand",
+          "controller_name": "brand",
+          "model": "brand",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["name", "image"],
+          "table_header": ["ID", "Name", "Image"],
+          "table_body": ["id|integer", "name|STRING", "image|TEXT"],
+          "add_fields": ["name|STRING", "image|TEXT"],
+          "edit_fields": ["name|STRING", "image|TEXT"]
+        },
+        {
+          "name": "category",
+          "controller_name": "category",
+          "model": "category",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["name", "parent", "image_url"],
+          "table_header": ["ID", "Name", "Parent", "Image Url"],
+          "table_body": [
+            "id|integer",
+            "name|STRING",
+            "parent|INTEGER",
+            "image_url|TEXT"
+          ],
+          "add_fields": ["name|STRING", "parent|INTEGER", "image_url|TEXT"],
+          "edit_fields": ["name|STRING", "parent|INTEGER", "image_url|TEXT"]
+        },
+        {
+          "name": "coupon",
+          "controller_name": "coupon",
+          "model": "coupon",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["code", "valid_till", "discount_amount"],
+          "table_header": ["ID", "Code", "Valid Till", "Discount Amount"],
+          "table_body": [
+            "id|integer",
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ],
+          "add_fields": [
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ],
+          "edit_fields": [
+            "code|STRING",
+            "valid_till|DATEONLY",
+            "discount_amount|DOUBLE"
+          ]
+        },
+        {
+          "name": "image",
+          "controller_name": "image",
+          "model": "image",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["image_url", "size", "product_id"],
+          "table_header": ["ID", "Image Url", "Size", "Product Id"],
+          "table_body": [
+            "id|integer",
+            "image_url|TEXT",
+            "size|INTEGER",
+            "product_id|fk"
+          ],
+          "add_fields": ["image_url|TEXT", "size|INTEGER", "product_id|fk"],
+          "edit_fields": ["image_url|TEXT", "size|INTEGER", "product_id|fk"]
+        },
+        {
+          "name": "product",
+          "controller_name": "product",
+          "model": "product",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "uuid",
+            "barcode",
+            "name",
+            "category_id",
+            "sub_category_id",
+            "tags",
+            "brand_id",
+            "colors",
+            "cost_price",
+            "selling_price",
+            "tax",
+            "cgst",
+            "sgst",
+            "igst",
+            "discount",
+            "description",
+            "images"
+          ],
+          "table_header": [
+            "ID",
+            "Uuid",
+            "Barcode",
+            "Name",
+            "Category Id",
+            "Sub Category Id",
+            "Tags",
+            "Brand Id",
+            "Colors",
+            "Cost Price",
+            "Selling Price",
+            "Tax",
+            "Cgst",
+            "Sgst",
+            "Igst",
+            "Discount",
+            "Description",
+            "Images"
+          ],
+          "table_body": [
+            "id|integer",
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ],
+          "add_fields": [
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ],
+          "edit_fields": [
+            "uuid|STRING",
+            "barcode|STRING",
+            "name|STRING",
+            "category_id|fk",
+            "sub_category_id|fk",
+            "tags|STRING",
+            "brand_id|fk",
+            "colors|STRING",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "description|TEXT",
+            "images|fk"
+          ]
+        },
+        {
+          "name": "review",
+          "controller_name": "review",
+          "model": "review",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["rating", "comments", "user_id", "product_id"],
+          "table_header": ["ID", "Rating", "Comments", "User Id", "Product Id"],
+          "table_body": [
+            "id|integer",
+            "rating|INTEGER",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ],
+          "add_fields": [
+            "rating|mappings",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ],
+          "edit_fields": [
+            "rating|mappings",
+            "comments|TEXT",
+            "user_id|fk",
+            "product_id|fk"
+          ]
+        },
+        {
+          "name": "cart",
+          "controller_name": "cart",
+          "model": "cart",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["product_id", "quantity", "status", "user_id"],
+          "table_header": ["ID", "Product Id", "Quantity", "Status", "User Id"],
+          "table_body": [
+            "id|integer",
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|INTEGER",
+            "user_id|fk"
+          ],
+          "add_fields": [
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|mappings",
+            "user_id|fk"
+          ],
+          "edit_fields": [
+            "product_id|fk",
+            "quantity|INTEGER",
+            "status|mappings",
+            "user_id|fk"
+          ]
+        },
+        {
+          "name": "address",
+          "controller_name": "address",
+          "model": "address",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "landmark",
+            "address_line_1",
+            "address_line_2",
+            "city",
+            "state",
+            "pincode",
+            "user_id",
+            "tag"
+          ],
+          "table_header": [
+            "ID",
+            "Landmark",
+            "Address Line 1",
+            "Address Line 2",
+            "City",
+            "State",
+            "Pincode",
+            "User Id",
+            "Tag"
+          ],
+          "table_body": [
+            "id|integer",
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ],
+          "add_fields": [
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ],
+          "edit_fields": [
+            "landmark|STRING",
+            "address_line_1|STRING",
+            "address_line_2|STRING",
+            "city|STRING",
+            "state|STRING",
+            "pincode|STRING",
+            "user_id|fk",
+            "tag|STRING"
+          ]
+        },
+        {
+          "name": "order",
+          "controller_name": "order",
+          "model": "order",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "bill_no",
+            "delivery_status",
+            "payment_status",
+            "order_items",
+            "user_id",
+            "address_id",
+            "order_status",
+            "payment_method",
+            "coupon_id",
+            "total_price"
+          ],
+          "table_header": [
+            "ID",
+            "Bill No",
+            "Delivery Status",
+            "Payment Status",
+            "Order Items",
+            "User Id",
+            "Address Id",
+            "Order Status",
+            "Payment Method",
+            "Coupon Id",
+            "Total Price"
+          ],
+          "table_body": [
+            "id|integer",
+            "bill_no|STRING",
+            "delivery_status|INTEGER",
+            "payment_status|INTEGER",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ],
+          "add_fields": [
+            "bill_no|STRING",
+            "delivery_status|mappings",
+            "payment_status|mappings",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ],
+          "edit_fields": [
+            "bill_no|STRING",
+            "delivery_status|mappings",
+            "payment_status|mappings",
+            "order_items|fk",
+            "user_id|fk",
+            "address_id|fk",
+            "order_status|INTEGER",
+            "payment_method|STRING",
+            "coupon_id|fk",
+            "total_price|DOUBLE"
+          ]
+        },
+        {
+          "name": "order_item",
+          "controller_name": "order_item",
+          "model": "order_item",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": [
+            "product_id",
+            "user_id",
+            "order_id",
+            "quantity",
+            "cost_price",
+            "selling_price",
+            "tax",
+            "cgst",
+            "sgst",
+            "igst",
+            "discount",
+            "coupon_id"
+          ],
+          "table_header": [
+            "ID",
+            "Product Id",
+            "User Id",
+            "Order Id",
+            "Quantity",
+            "Cost Price",
+            "Selling Price",
+            "Tax",
+            "Cgst",
+            "Sgst",
+            "Igst",
+            "Discount",
+            "Coupon Id"
+          ],
+          "table_body": [
+            "id|integer",
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ],
+          "add_fields": [
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ],
+          "edit_fields": [
+            "product_id|fk",
+            "user_id|fk",
+            "order_id|fk",
+            "quantity|INTEGER",
+            "cost_price|DOUBLE",
+            "selling_price|DOUBLE",
+            "tax|DOUBLE",
+            "cgst|DOUBLE",
+            "sgst|DOUBLE",
+            "igst|DOUBLE",
+            "discount|DOUBLE",
+            "coupon_id|fk"
+          ]
+        },
+        {
+          "name": "payment",
+          "controller_name": "payment",
+          "model": "payment",
+          "add": true,
+          "edit": true,
+          "delete": true,
+          "bulkdelete": true,
+          "filter": true,
+          "export": true,
+          "menu_icon": "fas fa-user",
+          "filters": ["order_id", "payment_id", "oid", "payment_status"],
+          "table_header": [
+            "ID",
+            "Order Id",
+            "Payment Id",
+            "Oid",
+            "Payment Status"
+          ],
+          "table_body": [
+            "id|integer",
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|INTEGER"
+          ],
+          "add_fields": [
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|mappings"
+          ],
+          "edit_fields": [
+            "order_id|fk",
+            "payment_id|STRING",
+            "oid|STRING",
+            "payment_status|mappings"
+          ]
+        }
+      ]
+    }
+  ],
+  "copy": {
+    "custom/public/admin/js/dashboard.js": "release/public/admin/js/dashboard.js",
+    "custom/public/js/dashboard.js": "release/public/js/dashboard.js",
+    "custom/controllers/admin/brand.js": "release/controllers/admin/brand.js",
+    "custom/app.js": "release/app.js",
+    "custom/public/admin/brand.html": "release/public/admin/brand.html"
+  },
+  "strings": {},
+  "env": {
+    "DB_HOST": "localhost",
+    "DB_USER": "root",
+    "DB_PASSWORD": "Biswa@123",
+    "DB_DATABASE": "db_web",
+    "SECRET_KEY": "9K8hGXoV6Q",
+    "PORT": "9900"
+  }
+}

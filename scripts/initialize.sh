@@ -1,0 +1,18 @@
+cd ..;
+cd release;
+rm -rf *;
+mkdir -p models controllers services bin public seed uploads;
+cd ..;
+cp source/bin/www release/bin/;
+cp source/controllers/index.js release/controllers/;
+cp source/models/index.js release/models/;
+cp -r source/public/* release/public/;
+cp -r source/services release/;
+#cp -r source/public/js release/public/;
+#cp -r source/public/css release/public/;
+#cp -r source/public/image release/public/;
+#cp source/public/index.html release/public/;
+cp source/app.js release/;
+cp source/migration.js release/;
+cp source/package.json release/;
+cp -r source/node_modules release/;

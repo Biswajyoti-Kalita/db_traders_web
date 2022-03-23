@@ -1,0 +1,7 @@
+node_modules
+node_modules/*
+release
+release/*
+server/node_modules
+server/node_modules/*
+server/uploads/uploads/*
