@@ -5,3 +5,5 @@ release/*
 server/node_modules
 server/node_modules/*
 server/uploads/uploads/*
+server/package.json
+server/package-lock.json
