@@ -15,11 +15,13 @@ function getBrands() {
     },
     success: function (resultData) {
       var result = resultData.rows;
-      $("#addProductBrandIdInput").html(`<option value="">SELECT</option>`);
+      $("#addProductBrandIdInput, #editProductBrandIdInput").html(
+        `<option value="">SELECT</option>`
+      );
 
       for (var i = 0; i < result.length; i++) {
         brands[result[i].name] = {};
-        $("#addProductBrandIdInput").append(
+        $("#addProductBrandIdInput , #editProductBrandIdInput").append(
           `<option value="${result[i].id}">${result[i].name}</option>`
         );
       }
@@ -36,12 +38,14 @@ function getCategories() {
     success: function (resultData) {
       let result = resultData.rows;
       console.log("categories ", result);
-      $("#addProductCategoryIdInput").html(`<option value="">SELECT</option>`);
+      $("#addProductCategoryIdInput , #editProductCategoryIdInput").html(
+        `<option value="">SELECT</option>`
+      );
       for (var i = 0; i < result.length; i++) {
         categoriesArr[result[i].id] = result[i].name;
         if (result[i].parent === null || result[i].parent == -1) {
           if (!categories[result[i].name]) categories[result[i].name] = {};
-          $("#addProductCategoryIdInput").append(
+          $("#addProductCategoryIdInput , #editProductCategoryIdInput").append(
             `<option value="${result[i].id}">${result[i].name}</option>`
           );
         } else {
@@ -64,6 +68,23 @@ function showSubCategory() {
     for (let item in categories[categoriesArr[cat]]) {
       console.log(categories[categoriesArr[cat]][item]);
       $("#addProductSubCategoryIdInput").append(
+        `<option value="${
+          categories[categoriesArr[cat]][item].id
+        }">${item}</option>`
+      );
+    }
+  }
+}
+function showSubCategoryForEdit() {
+  let cat = $("#editProductCategoryIdInput").val();
+  if (cat) {
+    $("#editProductSubCategoryIdInput").html(
+      `<option value="">SELECT</option>`
+    );
+    console.log(categories[categoriesArr[cat]]);
+    for (let item in categories[categoriesArr[cat]]) {
+      console.log(categories[categoriesArr[cat]][item]);
+      $("#editProductSubCategoryIdInput").append(
         `<option value="${
           categories[categoriesArr[cat]][item].id
         }">${item}</option>`
@@ -132,20 +153,20 @@ function getProducts(searchObj) {
 					<td>${result[i] ? (result[i].name ? result[i].name : " ") : " "}</td>
 					<td>${
             result[i]
-              ? result[i].category_id
-                ? result[i].category_id
+              ? result[i].category
+                ? result[i].category.name
                 : " "
               : " "
           }</td>
 					<td>${
             result[i]
-              ? result[i].sub_category_id
-                ? result[i].sub_category_id
+              ? result[i].sub_category
+                ? result[i].sub_category.name
                 : " "
               : " "
           }</td>
 					<td>${result[i] ? (result[i].tags ? result[i].tags : " ") : " "}</td>
-					<td>${result[i] ? (result[i].brand_id ? result[i].brand_id : " ") : " "}</td>
+					<td>${result[i] ? (result[i].brand ? result[i].brand.name : " ") : " "}</td>
 					<td>${result[i] ? (result[i].colors ? result[i].colors : " ") : " "}</td>
 					<td>${
             result[i]
@@ -183,9 +204,15 @@ function getProducts(searchObj) {
                   "')\"   >images</span>"
                 : " "
               : " "
-          }</td><td><span class="btn btn-link btn-sm" onclick="editProductModal(  '${
-          result[i].uuid
-        }', '${result[i].barcode}', '${result[i].name}', '${
+          }</td>
+          <td>${
+            result.status != null
+              ? ["In-stock", "Out of stock"][result.status]
+              : ""
+          }</td>
+          <td><span class="btn btn-link btn-sm" onclick="editProductModal(  '${
+            result[i].uuid
+          }', '${result[i].barcode}', '${result[i].name}', '${
           result[i].category_id
         }', '${result[i].sub_category_id}', '${result[i].tags}', '${
           result[i].brand_id
@@ -194,7 +221,7 @@ function getProducts(searchObj) {
         }', '${result[i].tax}', '${result[i].cgst}', '${result[i].sgst}', '${
           result[i].igst
         }', '${result[i].discount}', '${result[i].description}', '${
-          result[i].images
+          result[i].status
         }', ${
           result[i].id
         } )">Edit</span><span class="btn btn-link btn-sm" onclick="deleteProductModal(${
@@ -349,7 +376,7 @@ function updateProduct() {
       igst: $("#editProductIgstInput").val(),
       discount: $("#editProductDiscountInput").val(),
       description: $("#editProductDescriptionInput").val(),
-      images: $("#editProductImagesInput").val(),
+      status: $("#editProductStatusInput").val(),
       id: $("#editProductProductId").val(),
       token: Cookies.get("token"),
     },
@@ -393,9 +420,10 @@ function editProductModal(
   igst,
   discount,
   description,
-  images,
+  status,
   id
 ) {
+  console.log("\n\n edit ", category_id, "  ", sub_category_id);
   $("#editProductModal").modal("show");
   $("#editProductProductId").val(id);
   $("#editProductUuidInput").val(uuid);
@@ -414,7 +442,7 @@ function editProductModal(
   $("#editProductIgstInput").val(igst);
   $("#editProductDiscountInput").val(discount);
   $("#editProductDescriptionInput").val(description);
-  $("#editProductImagesInput").val(images);
+  $("#editProductStatusInput").val(status);
 }
 $("#editProductForm").on("submit", (ev) => {
   ev.preventDefault();

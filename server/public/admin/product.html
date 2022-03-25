@@ -1096,21 +1096,22 @@
                 placeholder="Name"
               />
               <label>Category Id</label>
-              <input
+              <select
                 type="text"
                 id="editProductCategoryIdInput"
                 name="category_id"
                 class="form-control mb-2"
                 placeholder="Category_id"
-              />
+                onchange="showSubCategoryForEdit()"
+              ></select>
               <label>Sub Category Id</label>
-              <input
+              <select
                 type="text"
                 id="editProductSubCategoryIdInput"
                 name="sub_category_id"
                 class="form-control mb-2"
                 placeholder="Sub_category_id"
-              />
+              ></select>
               <label>Tags</label>
               <input
                 type="text"
@@ -1120,13 +1121,13 @@
                 placeholder="Tags"
               />
               <label>Brand Id</label>
-              <input
+              <select
                 type="text"
                 id="editProductBrandIdInput"
                 name="brand_id"
                 class="form-control mb-2"
                 placeholder="Brand_id"
-              />
+              ></select>
               <label>Colors</label>
               <input
                 type="text"
@@ -1199,14 +1200,12 @@
                 class="form-control mb-2"
                 placeholder="Description"
               />
-              <label>Images</label>
-              <input
-                type="text"
-                id="editProductImagesInput"
-                name="images"
-                class="form-control mb-2"
-                placeholder="Images"
-              />
+              <label>Status</label>
+              <select class="form-control" id="editProductStatusInput">
+                <option value="0">In Stock</option>
+                <option value="1">Out of Stock</option>
+              </select>
+
               <input type="hidden" id="editProductProductId" />
               <button type="submit" class="btn btn-primary btn-sm mt-2">
                 Submit

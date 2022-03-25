@@ -113,9 +113,10 @@ function addBrand() {
   let formData = new FormData();
   if ($("#addBrandImageInput").get(0).files[0])
     formData.append("image", $("#addBrandImageInput").get(0).files[0]);
-  console.log("image added");
   formData.append("name", $("#addBrandNameInput").val());
-  console.log("brand name added");
+  // processData: false,
+  // contentType: false,
+
   $.ajax({
     url: "/admin/addbrand",
     method: "POST",
@@ -157,15 +158,21 @@ function addBrandModal() {
 }
 
 function updateBrand() {
+  let formData = new FormData();
+  if ($("#editBrandImageInput").get(0).files[0])
+    formData.append("image", $("#editBrandImageInput").get(0).files[0]);
+  formData.append("name", $("#editBrandNameInput").val());
+  formData.append("id", $("#editBrandBrandId").val());
+
   $.ajax({
     url: "/admin/updatebrand",
     method: "POST",
-    data: {
-      name: $("#editBrandNameInput").val(),
-      image: $("#editBrandImageInput").val(),
-      id: $("#editBrandBrandId").val(),
+    processData: false,
+    contentType: false,
+    headers: {
       token: Cookies.get("token"),
     },
+    data: formData,
     success: function (result) {
       console.log(result);
       if (result.status == "success") {
@@ -193,7 +200,7 @@ function editBrandModal(name, image, id) {
   $("#editBrandModal").modal("show");
   $("#editBrandBrandId").val(id);
   $("#editBrandNameInput").val(name);
-  $("#editBrandImageInput").val(image);
+  $("#editBrandImageView").attr("src", image);
 }
 $("#editBrandForm").on("submit", (ev) => {
   ev.preventDefault();

@@ -44,11 +44,13 @@ function getCategorys(searchObj) {
       $("#addCategory").html("");
       $("#editCategory").html("");
 
-      $("#addCategoryParentInput").html(`<option value="-1"> Root </option>`);
+      $("#addCategoryParentInput, #editCategoryParentInput").html(
+        `<option value="-1"> Root </option>`
+      );
 
       for (var i = 0; i < result.length; i++) {
         if (result[i].parent === null || result[i].parent == -1) {
-          $("#addCategoryParentInput").append(
+          $("#addCategoryParentInput, #editCategoryParentInput").append(
             `<option value=${result[i].id}> ${result[i].name} </option>`
           );
         }
@@ -68,7 +70,7 @@ function getCategorys(searchObj) {
               : " "
           }</td><td><span class="btn btn-link btn-sm" onclick="editCategoryModal(  '${
           result[i].name
-        }', '${result[i].parent}', '${result[i].image_url}', ${
+        }', '${result[i].parent_id}', '${result[i].image_url}', ${
           result[i].id
         } )">Edit</span><span class="btn btn-link btn-sm" onclick="deleteCategoryModal(${
           result[i].id
@@ -165,16 +167,22 @@ function addCategoryModal() {
 }
 
 function updateCategory() {
+  let formData = new FormData();
+  if ($("#editCategoryImageUrlInput").get(0).files[0])
+    formData.append("image", $("#editCategoryImageUrlInput").get(0).files[0]);
+  formData.append("name", $("#editCategoryNameInput").val());
+  formData.append("parent", $("#editCategoryParentInput").val());
+  formData.append("id", $("#editCategoryCategoryId").val());
+
   $.ajax({
     url: "/admin/updatecategory",
     method: "POST",
-    data: {
-      name: $("#editCategoryNameInput").val(),
-      parent: $("#editCategoryParentInput").val(),
-      image_url: $("#editCategoryImageUrlInput").val(),
-      id: $("#editCategoryCategoryId").val(),
+    processData: false,
+    contentType: false,
+    headers: {
       token: Cookies.get("token"),
     },
+    data: formData,
     success: function (result) {
       console.log(result);
       if (result.status == "success") {
@@ -203,7 +211,7 @@ function editCategoryModal(name, parent, image_url, id) {
   $("#editCategoryCategoryId").val(id);
   $("#editCategoryNameInput").val(name);
   $("#editCategoryParentInput").val(parent);
-  $("#editCategoryImageUrlInput").val(image_url);
+  $("#editCategoryImageUrlView").attr("src", image_url ? image_url : "#");
 }
 $("#editCategoryForm").on("submit", (ev) => {
   ev.preventDefault();

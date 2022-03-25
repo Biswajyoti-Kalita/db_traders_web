@@ -22,21 +22,26 @@ module.exports = {
     app.post(
       "/admin/addimage",
       roleService.verifyRole(role),
+      file_upload.single("image"),
       async function (req, res) {
         try {
-          if (req.body.image_url === null || req.body.image_url === undefined)
+          if (!req.file) {
             return res.send({
               status: "error",
-              message: " Image Url is required ",
+              message: "File not found",
             });
-
-          if (req.body.size === null || req.body.size === undefined)
-            return res.send({ status: "error", message: " Size is required " });
-
+          }
+          if (req.body.product_id == null || req.body.product_id == undefined) {
+            return res.send({
+              status: "error",
+              message: "Product Id is required",
+            });
+          }
           await db.image.create({
-            image_url: req.body.image_url,
-
-            size: req.body.size,
+            image_url:
+              "/uploads/" +
+              req.file.path.substr(req.file.path.lastIndexOf("/") + 1),
+            product_id: req.body.product_id,
           });
           res.send({
             status: "success",
@@ -54,20 +59,22 @@ module.exports = {
     app.post(
       "/admin/updateimage",
       roleService.verifyRole(role),
+      file_upload.single("image"),
       async function (req, res) {
         try {
-          await db.image.update(
-            {
-              image_url: req.body.image_url,
-
-              size: req.body.size,
+          let obj = {
+            product_id: req.body.product_id,
+          };
+          if (req.file) {
+            obj["image_url"] =
+              "/uploads/" +
+              req.file.path.substr(req.file.path.lastIndexOf("/") + 1);
+          }
+          await db.image.update(obj, {
+            where: {
+              id: req.body.id,
             },
-            {
-              where: {
-                id: req.body.id,
-              },
-            }
-          );
+          });
           res.send({
             status: "success",
             message: "done",

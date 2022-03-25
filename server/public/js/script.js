@@ -91,7 +91,7 @@ function getLatestProducts() {
                   <h6>
                     ${result[i].name}
                   </h6>
-                  <small>${result[i].brand ? result[i].brand : ""}</small>
+                  <small>${result[i].brand ? result[i].brand.name : ""}</small>
                   <div class="product_info">
                     <h5>
                       <span>₹</span>${temp}

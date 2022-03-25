@@ -55,22 +55,24 @@ module.exports = {
     app.post(
       "/admin/updatecategory",
       roleService.verifyRole(role),
+      file_upload.single("image"),
       async function (req, res) {
         try {
-          await db.category.update(
-            {
-              name: req.body.name,
+          let obj = {
+            name: req.body.name,
+            parent_id: req.body.parent,
+          };
 
-              parent: req.body.parent,
-
-              image_url: req.body.image_url,
+          if (req.file && req.file.path) {
+            obj["image_url"] =
+              "/uploads/" +
+              req.file.path.substr(req.file.path.lastIndexOf("/") + 1);
+          }
+          await db.category.update(obj, {
+            where: {
+              id: req.body.id,
             },
-            {
-              where: {
-                id: req.body.id,
-              },
-            }
-          );
+          });
           res.send({
             status: "success",
             message: "done",

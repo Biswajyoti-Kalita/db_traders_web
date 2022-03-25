@@ -49,14 +49,35 @@ module.exports = {
             name: req.body.name ? req.body.name : "",
             tags: req.body.tags ? req.body.tags : "",
             colors: req.body.colors ? req.body.colors : "",
-            cost_price: req.body.cost_price,
-            selling_price: req.body.selling_price,
+            cost_price: req.body.cost_price ? req.body.cost_price : 0,
+            selling_price: req.body.selling_price ? req.body.selling_price : 0,
+            category_id: req.body.category_id ? req.body.category_id : null,
+            sub_category_id: req.body.sub_category_id
+              ? req.body.sub_category_id
+              : null,
+            brand_id: req.body.brand_id ? req.body.brand_id : null,
             tax: req.body.tax ? req.body.tax : 0,
-            cgst: isNaN(req.body.cgst) ? 0 : +req.body.cgst,
-            sgst: isNaN(req.body.sgst) ? 0 : +req.body.sgst,
-            igst: isNaN(req.body.igst) ? 0 : +req.body.igst,
-            discount: req.body.discount ? 0 : req.body.discount,
-            status: req.body.status == null ? 0 : req.body.status,
+            cgst: req.body.cgst
+              ? isNaN(req.body.cgst)
+                ? 0
+                : parseFloat(+req.body.cgst)
+              : 0,
+            sgst: req.body.sgst
+              ? isNaN(req.body.sgst)
+                ? 0
+                : parseFloat(+req.body.sgst)
+              : 0,
+            igst: req.body.igst
+              ? isNaN(req.body.igst)
+                ? 0
+                : parseFloat(+req.body.igst)
+              : 0,
+            discount: req.body.discount
+              ? isNaN(parseFloat(req.body.discount))
+                ? 0
+                : parseFloat(+req.body.discount)
+              : 0,
+            status: req.body.status == null ? 0 : +req.body.status,
             description: req.body.description,
           });
 
@@ -94,30 +115,25 @@ module.exports = {
           await db.product.update(
             {
               uuid: req.body.uuid,
-
               barcode: req.body.barcode,
-
               name: req.body.name,
-
               tags: req.body.tags,
-
               colors: req.body.colors,
-
-              cost_price: req.body.cost_price,
-
-              selling_price: req.body.selling_price,
-
-              tax: req.body.tax,
-
-              cgst: req.body.cgst,
-
-              sgst: req.body.sgst,
-
-              igst: req.body.igst,
-
-              discount: req.body.discount,
-
+              cost_price: req.body.cost_price != null ? req.body.cost_price : 0,
+              selling_price:
+                req.body.selling_price != null ? req.body.selling_price : 0,
+              tax: req.body.tax ? req.body.tax : 0,
+              cgst: req.body.cgst ? req.body.cgst : 0,
+              sgst: req.body.sgst ? req.body.sgst : 0,
+              igst: req.body.igst ? req.body.igst : 0,
+              discount: req.body.discount ? req.body.discount : 0,
               description: req.body.description,
+              status: req.body.status,
+              category_id: req.body.category_id ? req.body.category_id : null,
+              sub_category_id: req.body.sub_category_id
+                ? req.body.sub_category_id
+                : null,
+              brand_id: req.body.brand_id ? req.body.brand_id : null,
             },
             {
               where: {
@@ -143,11 +159,17 @@ module.exports = {
       roleService.verifyRole(role),
       async function (req, res) {
         try {
-          await db.product.destroy({
+          const data = await db.product.destroy({
             where: {
               id: req.body.id,
             },
           });
+          if (data)
+            await db.image.destroy({
+              where: {
+                product_id: req.body.id,
+              },
+            });
           res.send({
             status: "success",
             message: "Deleted Successfully",
@@ -160,7 +182,25 @@ module.exports = {
         }
       }
     );
-
+    app.post(
+      "/admin/deleteproductimage",
+      roleService.verifyRole(role),
+      async function (req, res) {
+        const { product_id, image_url } = req.body;
+        if (product_id && image_url) {
+          await db.image.destroy({
+            where: {
+              product_id,
+              image_url,
+            },
+          });
+        }
+        return res.send({
+          status: "success",
+          message: "Image deleted successfully",
+        });
+      }
+    );
     app.post(
       "/admin/bulkdeleteproduct",
       roleService.verifyRole(role),
@@ -250,6 +290,18 @@ module.exports = {
                 model: db.image,
                 as: "images",
               },
+              {
+                model: db.brand,
+                as: "brand",
+              },
+              {
+                model: db.category,
+                as: "category",
+              },
+              {
+                model: db.category,
+                as: "sub_category",
+              },
             ],
           });
           res.send(products);
@@ -263,6 +315,85 @@ module.exports = {
       }
     );
 
+    app.post(
+      "/admin/getallproducts",
+      roleService.verifyRole(role),
+      async function (req, res) {
+        let where = {};
+        const order = req.body.order ? req.body.order : "id";
+        const order_by = req.body.order_by ? req.body.order_by : "DESC";
+        let order_arr = [];
+
+        if (order.indexOf(".") >= 0) {
+          const tempArr = order.split(".");
+          tempArr.push(order_by);
+          order_arr = [tempArr];
+        } else {
+          order_arr = [[order, order_by]];
+        }
+
+        if (req.body.uuid != null) where["uuid"] = req.body.uuid;
+
+        if (req.body.barcode != null) where["barcode"] = req.body.barcode;
+
+        if (req.body.name != null) where["name"] = req.body.name;
+
+        if (req.body.tags != null) where["tags"] = req.body.tags;
+
+        if (req.body.colors != null) where["colors"] = req.body.colors;
+
+        if (req.body.cost_price != null)
+          where["cost_price"] = req.body.cost_price;
+
+        if (req.body.selling_price != null)
+          where["selling_price"] = req.body.selling_price;
+
+        if (req.body.tax != null) where["tax"] = req.body.tax;
+
+        if (req.body.cgst != null) where["cgst"] = req.body.cgst;
+
+        if (req.body.sgst != null) where["sgst"] = req.body.sgst;
+
+        if (req.body.igst != null) where["igst"] = req.body.igst;
+
+        if (req.body.discount != null) where["discount"] = req.body.discount;
+
+        if (req.body.description != null)
+          where["description"] = req.body.description;
+
+        try {
+          const products = await db.product.findAll({
+            where: where,
+            order: order_arr,
+            include: [
+              {
+                model: db.image,
+                as: "images",
+              },
+              {
+                model: db.brand,
+                as: "brand",
+              },
+              {
+                model: db.category,
+                as: "category",
+              },
+              {
+                model: db.category,
+                as: "sub_category",
+              },
+            ],
+          });
+          res.send(products);
+        } catch (error) {
+          console.log(error);
+          res.send({
+            status: "error",
+            message: "Something went wrong",
+          });
+        }
+      }
+    );
     app.post(
       "/admin/getproduct",
       roleService.verifyRole(role),

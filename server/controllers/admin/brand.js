@@ -57,20 +57,29 @@ module.exports = {
     app.post(
       "/admin/updatebrand",
       roleService.verifyRole(role),
+      file_upload.single("image"),
       async function (req, res) {
         try {
-          await db.brand.update(
-            {
-              name: req.body.name,
+          if (req.body.id == null || req.body.id == undefined) {
+            return res.send({
+              status: "error",
+              message: "Id is required",
+            });
+          }
+          let obj = {
+            name: req.body.name,
+          };
+          if (req.file && req.file.path) {
+            obj["image"] =
+              "/uploads/" +
+              req.file.path.substr(req.file.path.lastIndexOf("/") + 1);
+          }
 
-              image: req.body.image,
+          await db.brand.update(obj, {
+            where: {
+              id: req.body.id,
             },
-            {
-              where: {
-                id: req.body.id,
-              },
-            }
-          );
+          });
           res.send({
             status: "success",
             message: "done",

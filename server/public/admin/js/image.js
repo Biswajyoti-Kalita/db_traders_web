@@ -1,7 +1,27 @@
 $(document).ready(function () {
+  getAllProducts();
   getImages();
 });
-
+function getAllProducts() {
+  $.ajax({
+    url: "/admin/getallproducts",
+    method: "POST",
+    data: {
+      token: Cookies.get("token"),
+    },
+    success: function (resultData) {
+      $("#addImageProductIdInput, #editImageProductIdInput").html("");
+      console.log(resultData);
+      resultData.map((item) => {
+        $("#addImageProductIdInput, #editImageProductIdInput").append(
+          `<option value=${item.id}>${item.name} || ${
+            item.brand ? item.brand.name : ""
+          } || ${item.selling_price}</option>`
+        );
+      });
+    },
+  });
+}
 var ImageTableOffset = 0;
 var ImageTableLimit = 10;
 var ImageTableOrderField = "id";
@@ -115,15 +135,20 @@ $("#searchImageForm").on("submit", (ev) => {
 });
 
 function addImage() {
+  let formData = new FormData();
+  if ($("#addImageImageUrlInput").get(0).files[0])
+    formData.append("image", $("#addImageImageUrlInput").get(0).files[0]);
+  formData.append("product_id", $("#addImageProductIdInput").val());
+
   $.ajax({
     url: "/admin/addimage",
     method: "POST",
-    data: {
-      image_url: $("#addImageImageUrlInput").val(),
-      size: $("#addImageSizeInput").val(),
-      product_id: $("#addImageProductIdInput").val(),
+    headers: {
       token: Cookies.get("token"),
     },
+    processData: false,
+    contentType: false,
+    data: formData,
     success: function (result) {
       console.log(result);
       if (result.status == "success") {
@@ -156,16 +181,22 @@ function addImageModal() {
 }
 
 function updateImage() {
+  let formData = new FormData();
+  if ($("#editImageImageUrlInput").get(0).files[0])
+    formData.append("image", $("#editImageImageUrlInput").get(0).files[0]);
+  formData.append("product_id", $("#editImageProductIdInput").val());
+  formData.append("id", $("#editImageImageId").val());
+
   $.ajax({
     url: "/admin/updateimage",
     method: "POST",
-    data: {
-      image_url: $("#editImageImageUrlInput").val(),
-      size: $("#editImageSizeInput").val(),
-      product_id: $("#editImageProductIdInput").val(),
-      id: $("#editImageImageId").val(),
+    processData: false,
+    contentType: false,
+
+    headers: {
       token: Cookies.get("token"),
     },
+    data: formData,
     success: function (result) {
       console.log(result);
       if (result.status == "success") {
@@ -192,8 +223,7 @@ function updateImage() {
 function editImageModal(image_url, size, product_id, id) {
   $("#editImageModal").modal("show");
   $("#editImageImageId").val(id);
-  $("#editImageImageUrlInput").val(image_url);
-  $("#editImageSizeInput").val(size);
+  $("#editImageImageUrlView").attr("src", image_url);
   $("#editImageProductIdInput").val(product_id);
 }
 $("#editImageForm").on("submit", (ev) => {
