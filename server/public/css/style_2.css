@@ -1,9 +1,8 @@
-
 .float-r {
   float: right;
 }
 .ws-nw {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 .img-block {
   align-items: center;
@@ -13,4 +12,8 @@
 }
 .cursor-p {
   cursor: pointer;
+}
+table img {
+  max-width: 200px;
+  max-height: 200px;
 }
